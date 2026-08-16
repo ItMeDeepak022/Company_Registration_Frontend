@@ -80,7 +80,7 @@ export default function Dasheader() {
             </div>
 
 
-            <div className={`absolute top-16  left-0 sm:hidden block w-full h-screen bg-white
+            <div className={`absolute top-16  left-0 sm:hidden block w-full  min-h-screen bg-white 
                  overflow-hidden transition-all duration-700 ease-in-out
   ${showMenu
                     ? "max-h-[500px] translate-y-0 scale-100 opacity-100"
