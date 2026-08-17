@@ -1,248 +1,201 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 
+const statusStyles = {
+    Verified: "bg-emerald-100 text-emerald-700",
+    Rejected: "bg-red-100 text-red-700",
+    Pending: "bg-amber-100 text-amber-700",
+};
+
+function SkeletonBlock({ className }) {
+    return <div className={`animate-pulse rounded-md bg-slate-200 ${className}`} />;
+}
+
 export default function Profile() {
-    // Dummy data - baad mein API se replace kar dena
-    const user = {
-        name: "Deepak Kushwaha",
-        email: "deepak@example.com",
-        phone: "9123456789",
+    const [companies, setCompanies] = useState([]);
+    const [userData, setUserData] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
-        company: [
-            {
-                companyName: "TechNova Innovations Pvt Ltd",
-                registrationNumber: "U72900KA2026PTC123456",
-                pan: "AABCT1234K",
-                email: "contact@technova.com",
-                phone: "9123456789",
-                address:
-                    "2nd Floor, Manyata Tech Park, Nagawara, Bengaluru, Karnataka - 560045",
-                verificationStatus: "Verified",
-            },
-            {
-                companyName: "TechNova Innovations Pvt Ltd",
-                registrationNumber: "U72900KA2026PTC123456",
-                pan: "AABCT1234K",
-                email: "contact@technova.com",
-                phone: "9123456789",
-                address:
-                    "2nd Floor, Manyata Tech Park, Nagawara, Bengaluru, Karnataka - 560045",
-                verificationStatus: "Verified",
-            }
-        ],
-    };
-
-
-    let [companies, setcompanies] = useState([])
-
-    let [userData, setuserData] = useState({})
-
-    console.log(userData, 'data hai n');
     const getCompanies = () => {
+        setLoading(true);
+        setError("");
+
         api.get("/get-profile")
             .then((res) => res.data)
             .then((finalRes) => {
-                console.log(finalRes);
-                setcompanies(finalRes.data)
-                setuserData(finalRes.data[0].userId)
+                const data = finalRes.data || [];
+                setCompanies(data);
+                // Guard against an empty list — there may be no company yet
+                setUserData(data.length > 0 ? data[0].userId : {});
             })
-            .catch((error) => {
-                console.log(error.response?.data);
-            });
+            .catch((err) => {
+                setError(
+                    err?.response?.data?.message ||
+                    "Couldn't load your profile. Please try again."
+                );
+            })
+            .finally(() => setLoading(false));
     };
 
     useEffect(() => {
         getCompanies();
     }, []);
 
+    const initial = userData?.name?.charAt(0)?.toUpperCase() || "?";
+
     return (
-        <div className="min-h-screen sm:m-0 m-3 py-15">
+        <div className="h-screen bg-slate-50 px-3 pt-5 sm:pb-0 pb-20 py-10 sm:px-6">
+            <div className="mx-auto max-w-5xl sm:pb-0 pb-18">
 
-            <div className="mx-auto mt-5 max-w-5xl">
 
-                {/* Heading */}
-                <div className="mt-5 mb-5 sm:absolute top-25">
-                    <h1 className="text-2xl font-bold text-gray-800 sm:text-3xl">
-                        My Profile
-                    </h1>
-
-                    <p className="mt-2 text-sm text-gray-500">
-                        View your profile and registered company information.
-                    </p>
-                </div>
+                {error && (
+                    <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        {error}{" "}
+                        <button
+                            onClick={getCompanies}
+                            className="font-semibold underline underline-offset-2 hover:text-red-800"
+                        >
+                            Retry
+                        </button>
+                    </div>
+                )}
 
                 <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
-
                     {/* ================= LEFT PROFILE ================= */}
-                    <div className="lg:sticky lg:top-50">
-                        <div className="rounded-xl bg-white p-6 shadow-md">
-
-                            {/* Avatar */}
-                            <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-2xl font-bold text-blue-600">
-                                {userData?.name?.charAt(0).toUpperCase()}
-                            </div>
-
-                            <h2 className="text-xl font-bold text-gray-800">
-                                {userData.name}
-                            </h2>
-
-                            <div className="mt-5 space-y-4">
-
-                                <div>
-                                    <p className="text-sm text-gray-500">
-                                        Email
-                                    </p>
-
-                                    <p className="break-all font-medium text-gray-800">
-                                        {userData.email}
-                                    </p>
+                    <div className="lg:sticky lg:top-10">
+                        <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+                            {loading ? (
+                                <div className="space-y-4">
+                                    <SkeletonBlock className="h-20 w-20 rounded-full" />
+                                    <SkeletonBlock className="h-5 w-2/3" />
+                                    <SkeletonBlock className="h-4 w-1/2" />
+                                    <SkeletonBlock className="h-4 w-1/3" />
                                 </div>
+                            ) : (
+                                <>
+                                    {/* Avatar */}
+                                    <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-2xl font-bold text-white shadow-md shadow-indigo-100">
+                                        {initial}
+                                    </div>
 
-                                <div>
-                                    <p className="text-sm text-gray-500">
-                                        Phone
-                                    </p>
+                                    <h2 className="text-xl font-bold text-slate-800">
+                                        {userData?.name || "—"}
+                                    </h2>
 
-                                    <p className="font-medium text-gray-800">
-                                        {userData.phone}
-                                    </p>
-                                </div>
+                                    <div className="mt-5 space-y-4">
+                                        <div>
+                                            <p className="text-sm text-slate-500">Email</p>
+                                            <p className="break-all font-medium text-slate-800">
+                                                {userData?.email || "—"}
+                                            </p>
+                                        </div>
 
-                            </div>
 
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
 
-
                     {/* ================= RIGHT COMPANY ================= */}
-                    <div className="rounded-xl bg-white p-6 shadow-md lg:col-span-2">
-
-                        {/* Scrollable Company Area */}
-                        <div className="max-h-[70vh] overflow-y-auto pr-2">
-
-                            {companies.length > 0 ? (
-
+                    <div className="rounded-2xl bg-white  p-3 sm:p-6 shadow-sm ring-1 ring-slate-100 lg:col-span-2 ">
+                        <div className="space-y-6 sm:pr-2 lg:max-h-[70vh] lg:overflow-y-auto">
+                            {loading ? (
+                                <div className="space-y-4 rounded-xl  p-5">
+                                    <SkeletonBlock className="h-5 w-40" />
+                                    <SkeletonBlock className="h-4 w-64" />
+                                    <div className="grid grid-cols-1 gap-4 pt-2 sm:grid-cols-2">
+                                        <SkeletonBlock className="h-4 w-full" />
+                                        <SkeletonBlock className="h-4 w-full" />
+                                        <SkeletonBlock className="h-4 w-full" />
+                                        <SkeletonBlock className="h-4 w-full" />
+                                    </div>
+                                </div>
+                            ) : companies.length > 0 ? (
                                 companies.map((company, index) => (
-
                                     <div
-                                        key={index}
-                                        className="mb-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm last:mb-0"
+                                        key={company._id || index}
+                                        className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
                                     >
-
                                         {/* Header */}
                                         <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-
                                             <div>
-                                                <h2 className="text-xl font-bold text-gray-800">
+                                                <h2 className="text-xl font-bold text-slate-800">
                                                     Registered Company
                                                 </h2>
-
-                                                <p className="mt-1 text-sm text-gray-500">
+                                                <p className="mt-1 text-sm text-slate-500">
                                                     Your registered company details
                                                 </p>
                                             </div>
 
-                                            {/* Status */}
                                             <span
-                                                className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${company.verificationStatus === "Verified"
-                                                    ? "bg-green-100 text-green-700"
-                                                    : company.verificationStatus === "Rejected"
-                                                        ? "bg-red-100 text-red-700"
-                                                        : "bg-yellow-100 text-yellow-700"
+                                                className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[company.verificationStatus] ||
+                                                    "bg-slate-100 text-slate-600"
                                                     }`}
                                             >
                                                 {company.verificationStatus}
                                             </span>
-
                                         </div>
-
 
                                         {/* Company Details */}
                                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-
                                             <div>
-                                                <p className="text-sm text-gray-500">
-                                                    Company Name
-                                                </p>
-
-                                                <p className="mt-1 font-medium text-gray-800">
+                                                <p className="text-sm text-slate-500">Company Name</p>
+                                                <p className="mt-1 font-medium text-slate-800">
                                                     {company.companyName}
                                                 </p>
                                             </div>
 
                                             <div>
-                                                <p className="text-sm text-gray-500">
+                                                <p className="text-sm text-slate-500">
                                                     Registration Number
                                                 </p>
-
-                                                <p className="mt-1 font-medium text-gray-800">
+                                                <p className="mt-1 font-medium text-slate-800">
                                                     {company.registrationNumber}
                                                 </p>
                                             </div>
 
                                             <div>
-                                                <p className="text-sm text-gray-500">
-                                                    PAN
-                                                </p>
-
-                                                <p className="mt-1 font-medium text-gray-800">
+                                                <p className="text-sm text-slate-500">PAN</p>
+                                                <p className="mt-1 font-medium text-slate-800">
                                                     {company.pan}
                                                 </p>
                                             </div>
 
                                             <div>
-                                                <p className="text-sm text-gray-500">
-                                                    Email
-                                                </p>
-
-                                                <p className="mt-1 break-all font-medium text-gray-800">
+                                                <p className="text-sm text-slate-500">Email</p>
+                                                <p className="mt-1 break-all font-medium text-slate-800">
                                                     {company.email}
                                                 </p>
                                             </div>
 
                                             <div>
-                                                <p className="text-sm text-gray-500">
-                                                    Phone
-                                                </p>
-
-                                                <p className="mt-1 font-medium text-gray-800">
+                                                <p className="text-sm text-slate-500">Phone</p>
+                                                <p className="mt-1 font-medium text-slate-800">
                                                     {company.phone}
                                                 </p>
                                             </div>
 
                                             <div className="sm:col-span-2">
-                                                <p className="text-sm text-gray-500">
-                                                    Address
-                                                </p>
-
-                                                <p className="mt-1 font-medium text-gray-800">
+                                                <p className="text-sm text-slate-500">Address</p>
+                                                <p className="mt-1 font-medium text-slate-800">
                                                     {company.address}
                                                 </p>
                                             </div>
-
                                         </div>
-
                                     </div>
-
                                 ))
-
                             ) : (
-
-                                <div className="rounded-xl border border-dashed border-gray-300 p-8 text-center">
-                                    <p className="text-gray-500">
-                                        No company registered yet.
-                                    </p>
+                                <div className="rounded-xl border border-dashed border-slate-300 p-8 text-center">
+                                    <p className="text-slate-500">No company registered yet.</p>
                                 </div>
-
                             )}
-
                         </div>
-
                     </div>
 
                 </div>
             </div>
         </div>
     );
-};
-
+}

@@ -1,76 +1,55 @@
-import React from 'react'
-import { Link, useNavigate } from 'react-router'
+import React from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+
+const navItems = [
+  { name: "Dashboard", path: "/dashboard" },
+  { name: "Company Registration", path: "/dashboard/company-registration" },
+  { name: "Company Verification", path: "/dashboard/company-verification" },
+  { name: "All Companies", path: "/dashboard/companies" },
+  { name: "Profile", path: "/dashboard/profile" },
+];
 
 export default function Sidebar() {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
 
-    const logout = () => {
-        localStorage.removeItem("token");
-        navigate("/");
-    };
-    return (
-        <aside className="w-64 bg-white sm:block hidden text-white border-r-1 border-gray-200 fixed left-0 top-0 bottom-0">
+  return (
+    <aside className="hidden lg:flex lg:flex-col w-64 bg-[#d9dde002] border-r border-gray-200 fixed left-0 top-0 bottom-0 z-30">
+      <div className="h-16 flex items-center px-6 border-b border-gray-200">
+        <h1 className="text-lg font-semibold text-black">Dashboard</h1>
+      </div>
 
-            {/* Logo */}
-            <div className="h-16 flex items-center px-6 bg-red-600 ">
-                <h1 className="text-xl font-bold text-white">
-                   Dashboard
-                </h1>
-            </div>
+      <nav className="flex-1 overflow-y-auto py-4">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            end={item.path === "/dashboard"}
+            className={({ isActive }) =>
+              `block border-l-4 px-6 py-3 text-sm font-medium ${
+                isActive
+                  ? "border-blue-600 bg-blue-100 text-blue-600"
+                  : "border-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`
+            }
+          >
+            {item.name}
+          </NavLink>
+        ))}
+      </nav>
 
-            {/* Menu */}
-            <nav className="p-4 space-y-2 mt-5">
-
-                <Link
-                    to="/dashboard"
-                    className="block px-4 py-3 rounded-lg   text-black bg-[#E2E8F0] hover:bg-gray-300"
-                >
-                    Dashboard
-                </Link>
-
-                <Link
-                    to="/dashboard/company-registration"
-                    className="block px-4 py-3 rounded-lg  text-black bg-[#E2E8F0] hover:bg-gray-300"
-                >
-                    Company Registration
-                </Link>
-
-                <Link
-                    to="/dashboard/company-verification"
-                    className="block px-4 py-3 rounded-lg  text-black bg-[#E2E8F0] hover:bg-gray-300"
-                >
-                    Company Verification
-                </Link>
-
-                <Link
-                    to="/dashboard/companies"
-                    className="block px-4 py-3 rounded-lg  text-black bg-[#E2E8F0] hover:bg-gray-300"
-                >
-                    All Companies
-                </Link>
-
-                <Link
-                    to="/dashboard/profile"
-                    className="block px-4 py-3 rounded-lg  text-black bg-[#E2E8F0] hover:bg-gray-300"
-                >
-                    Profile
-                </Link>
-
-            </nav>
-
-            {/* Logout */}
-            <div className="absolute w-full text-center h-15 bottom-0 border-t-1 border-gray-200">
-
-                <button
-                    onClick={logout}
-                    className=" cursor-pointer w-[80%] bg-red-600 py-3 px-10  rounded-[10px] mt-1"
-                >
-                    Logout
-                </button>
-
-            </div>
-
-        </aside>
-    )
+      <div className="p-4 ">
+        <button
+          onClick={logout}
+          className="w-full py-2 text-sm font-medium text-red-600 border border-red-600 rounded hover:bg-red-600 hover:text-white transition"
+        >
+          Logout
+        </button>
+      </div>
+    </aside>
+  );
 }

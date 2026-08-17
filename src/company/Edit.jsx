@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { toast, ToastContainer } from "react-toastify";
 
-export default function EditCompanyRegistration() {
+const inputClass =
+    "w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100";
+const readOnlyClass =
+    "w-full rounded-lg border border-slate-200 bg-gray-100 px-4 py-3 text-sm text-slate-500 cursor-not-allowed";
+const labelClass = "mb-2 block text-sm font-medium text-slate-700";
 
+export default function EditCompanyRegistration() {
     const { state } = useLocation();
     const navigate = useNavigate();
+    const [loader, setLoader] = useState(false);
 
-    console.log("Company:", state);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,45 +21,40 @@ export default function EditCompanyRegistration() {
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
 
-        console.log("Update Data:", data);
-
+        setLoader(true)
         try {
+            const res = await api.put(`/update-profile/${state._id}`, data);
 
-            const res = await api.put(
-                `/update-profile/${state._id}`,
-                data
-            );
-
-            console.log("Update Response:", res.data);
+            console.log(res.data);
 
             if (res.data.status) {
+                if (res.data.status) {
+                    toast.success(res.data.message)
+                    setLoader(false)
+                    setTimeout(() => {
+                        navigate("/dashboard/companies")
+                    }, 1000);
+                }
+                else {
+                    toast.error(res.data.message)
+                    setLoader(false)
+                }
 
-                toast.success(res.data.message);
-
-                navigate("/dashboard/companies");
-
-            } else {
-
-                toast.error(res.data.message);
 
             }
 
+             
         } catch (error) {
-
-            console.log(
-                "Update Error:",
-                error.response?.data || error
+            toast.error(
+                error.response?.data?.message || "Company update failed. Please try again."
             );
-
-            alert(
-                error.response?.data?.message ||
-                "Company update failed"
-            );
+        } finally {
+            setLoader(false);
         }
     };
 
     return (
-        <div className="min-h-screen m-2 py-15 sm:px-6 lg:px-10">
+        <div className="min-h-screen px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
             <ToastContainer />
             <div className="mx-auto max-w-3xl rounded-xl bg-white p-6 shadow-md sm:p-8">
 
@@ -62,144 +62,136 @@ export default function EditCompanyRegistration() {
                     Edit Company Registration
                 </h1>
 
-                <form
-                    onSubmit={handleSubmit}
-                    className="space-y-5"
-                >
+                <form onSubmit={handleSubmit} className="space-y-5">
 
-                    {/* Company Name */}
+                    {/* Company Name — full width */}
                     <div>
-                        <label className="mb-2 block text-sm font-medium">
-                            Company Name
+                        <label className={labelClass}>
+                            Company Name <span className="text-red-500">*</span>
                         </label>
-
                         <input
                             name="companyName"
                             type="text"
                             required
                             defaultValue={state?.companyName || ""}
-                            className="w-full rounded-lg border px-4 py-3"
+                            className={inputClass}
                         />
                     </div>
 
-                    {/* Registration Number */}
-                    <div>
-                        <label className="mb-2 block text-sm font-medium">
-                            Registration Number
-                        </label>
+                    {/* Registration Number + PAN — read-only, side by side */}
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                        <div>
+                            <label className={labelClass}>Registration Number</label>
+                            <input
+                                name="registrationNumber"
+                                type="text"
+                                readOnly
+                                defaultValue={state?.registrationNumber || ""}
+                                className={readOnlyClass}
+                            />
+                        </div>
 
-                        <input
-                            name="registrationNumber"
-                            type="text"
-                            readOnly
-                            defaultValue={state?.registrationNumber || ""}
-                            className="w-full rounded-lg border bg-gray-100 px-4 py-3"
-                        />
+                        <div>
+                            <label className={labelClass}>PAN</label>
+                            <input
+                                name="pan"
+                                type="text"
+                                readOnly
+                                defaultValue={state?.pan || ""}
+                                className={readOnlyClass}
+                            />
+                        </div>
                     </div>
 
-                    {/* PAN */}
-                    <div>
-                        <label className="mb-2 block text-sm font-medium">
-                            PAN
-                        </label>
+                    {/* Email + Phone — side by side */}
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                        <div>
+                            <label className={labelClass}>
+                                Email <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                name="email"
+                                type="email"
+                                required
+                                defaultValue={state?.email || ""}
+                                className={inputClass}
+                            />
+                        </div>
 
-                        <input
-                            name="pan"
-                            type="text"
-                            readOnly
-                            defaultValue={state?.pan || ""}
-                            className="w-full rounded-lg border bg-gray-100 px-4 py-3"
-                        />
+                        <div>
+                            <label className={labelClass}>
+                                Phone <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                name="phone"
+                                type="tel"
+                                required
+                                pattern="[0-9]{10}"
+                                maxLength="10"
+                                defaultValue={state?.phone || ""}
+                                className={inputClass}
+                            />
+                        </div>
                     </div>
 
-                    {/* Email */}
+                    {/* Address — full width */}
                     <div>
-                        <label className="mb-2 block text-sm font-medium">
-                            Email
+                        <label className={labelClass}>
+                            Address <span className="text-red-500">*</span>
                         </label>
-
-                        <input
-                            name="email"
-                            type="email"
-                            required
-                            defaultValue={state?.email || ""}
-                            className="w-full rounded-lg border px-4 py-3"
-                        />
-                    </div>
-
-                    {/* Phone */}
-                    <div>
-                        <label className="mb-2 block text-sm font-medium">
-                            Phone
-                        </label>
-
-                        <input
-                            name="phone"
-                            type="tel"
-                            required
-                            defaultValue={state?.phone || ""}
-                            className="w-full rounded-lg border px-4 py-3"
-                        />
-                    </div>
-
-                    {/* Address */}
-                    <div>
-                        <label className="mb-2 block text-sm font-medium">
-                            Address
-                        </label>
-
                         <textarea
                             name="address"
                             rows="4"
                             required
                             defaultValue={state?.address || ""}
-                            className="w-full rounded-lg border px-4 py-3"
+                            className={`${inputClass} resize-none`}
                         />
                     </div>
 
-                    {/* New Password */}
-                    <div>
-                        <label className="mb-2 block text-sm font-medium">
-                            New Password
-                        </label>
+                    {/* New Password + Confirm — side by side, optional */}
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                        <div>
+                            <label className={labelClass}>New Password</label>
+                            <input
+                                name="password"
+                                type="password"
+                                minLength="6"
+                                placeholder="Leave blank to keep current password"
+                                className={inputClass}
+                            />
+                        </div>
 
-                        <input
-                            name="password"
-                            type="password"
-                            minLength="6"
-                            placeholder="Enter new password"
-                            className="w-full rounded-lg border px-4 py-3"
-                        />
-                    </div>
-
-                    {/* Confirm Password */}
-                    <div>
-                        <label className="mb-2 block text-sm font-medium">
-                            Confirm Password
-                        </label>
-
-                        <input
-                            name="confirmPassword"
-                            type="password"
-                            minLength="6"
-                            placeholder="Confirm new password"
-                            className="w-full rounded-lg border px-4 py-3"
-                        />
+                        <div>
+                            <label className={labelClass}>Confirm Password</label>
+                            <input
+                                name="confirmPassword"
+                                type="password"
+                                minLength="6"
+                                placeholder="Confirm new password"
+                                className={inputClass}
+                            />
+                        </div>
                     </div>
 
                     {/* Update Button */}
                     <button
                         type="submit"
-                        className="w-full rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
+                        disabled={loader}
+                        className="w-full rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
                     >
-                        Update Company
+                        {loader ? (
+                            <span className="flex items-center justify-center gap-2">
+                                <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                                Updating...
+                            </span>
+                        ) : (
+                            "Update Company"
+                        )}
                     </button>
 
                 </form>
 
             </div>
-
         </div>
     );
-};
-
+}

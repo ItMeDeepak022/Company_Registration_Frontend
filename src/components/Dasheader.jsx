@@ -1,126 +1,82 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import { CiMenuFries } from "react-icons/ci";
-import { Link, useNavigate } from 'react-router';
-import { MdOutlineCancel } from "react-icons/md";
-import { MdAdminPanelSettings } from "react-icons/md";
+import { MdOutlineCancel, MdAdminPanelSettings } from "react-icons/md";
+import { NavLink, useNavigate } from "react-router-dom";
 
+const navItems = [
+  { name: "Dashboard", path: "/dashboard" },
+  { name: "Company Registration", path: "/dashboard/company-registration" },
+  { name: "Company Verification", path: "/dashboard/company-verification" },
+  { name: "All Companies", path: "/dashboard/companies" },
+  { name: "Profile", path: "/dashboard/profile" },
+];
 
 export default function Dasheader() {
+  const [showMenu, setShowMenu] = useState(false);
+  const navigate = useNavigate();
 
-    const navItems = [
-        {
-            name: "Dashboard",
-            path: "/dashboard",
-        },
-        {
-            name: "Company Registration",
-            path: "/dashboard/company-registration",
-        },
-        {
-            name: "Company Verification",
-            path: "/dashboard/company-verification",
-        },
-        {
-            name: "All Companies",
-            path: "/dashboard/companies",
-        },
-        {
-            name: "Profile",
-            path: "/dashboard/profile",
-        },
-    ];
+  const toggleMenu = () => setShowMenu((prev) => !prev);
 
-    let [showMenu, setshowMenu] = useState(false)
-    let showNav = () => {
-        setshowMenu(!showMenu)
-    }
-    const navigate = useNavigate();
+  const logout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
 
-     
+  return (
+    // sticky (not fixed) — no width math needed, and it can never overlap page content.
+    // Parent (Dashboard.jsx) already offsets content with lg:pl-64 for the sidebar.
+    <header className="sticky top-0 z-20 flex h-16 w-full items-center justify-between bg-white px-4 sm:px-6 shadow border-b border-slate-200">
+      <div className="flex items-center gap-3 min-w-0">
+        <h2 className="hidden lg:block truncate text-xl font-semibold text-slate-900">
+          Company Registration <span className="text-blue-600">&amp;</span> Verification
+        </h2>
 
-    const logout = () => {
-        localStorage.clear()
-        navigate("/");
-    };
+        {/* Mobile menu toggle — shown below the lg breakpoint, matching Sidebar's cutoff */}
+        <button
+          onClick={toggleMenu}
+          aria-label={showMenu ? "Close menu" : "Open menu"}
+          className="lg:hidden text-2xl text-slate-700"
+        >
+          {showMenu ? <MdOutlineCancel /> : <CiMenuFries />}
+        </button>
+      </div>
 
-    return (
+      <div className="flex items-center gap-3">
+        <span className="hidden sm:inline text-slate-700 text-base">Welcome, Admin</span>
+        <MdAdminPanelSettings className="text-4xl text-slate-500" />
+      </div>
 
+      {/* Mobile dropdown nav */}
+      <div
+        className={`absolute left-0 top-16 w-full min-h-screen bg-white lg:hidden
+          overflow-hidden transition-all duration-500 ease-in-out
+          ${showMenu ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}`}
+      >
+        <nav className="flex flex-col">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === "/dashboard"}
+              onClick={toggleMenu}
+              className={({ isActive }) =>
+                `p-4 pl-5 border-b border-gray-200 ${
+                  isActive ? "bg-blue-50 text-blue-600 font-semibold" : "text-slate-700"
+                }`
+              }
+            >
+              {item.name}
+            </NavLink>
+          ))}
 
-        <header className="sm:w-[83.3%] w-[100%]  flex h-16 bg-white sm:border-b-0 border-b-1  border-slate-200 shadow sm:flex items-center justify-between px-6 fixed top-0 right-0 z-20">
-
-            <div>
-                <h2 className="text-2xl font-normal text-black sm:block hidden">
-                    <span className='text-[#155DFC]'>Welcome</span> <span className='text-red-600 mr-2'>Company Registration</span>
-                    <span className='text-[#155DFC]'>&</span>   <span className='text-red-600 ' >Verification Application</span>
-
-                </h2>
-
-                <div className=' sm:hidden block'>
-                    {
-                        showMenu ?
-                            <MdOutlineCancel onClick={showNav} className='text-[28px]' />
-                            :
-                            <CiMenuFries onClick={showNav} className='text-[28px]' />
-                    }
-
-
-
-
-                </div>
-            </div>
-
-            <div className="flex justify-center items-center gap-4 sm:mr-2">
-
-                <span className="text-black text-[18px] sm:mr-0 mr-2">
-                    Welcome, Admin
-                </span>
-
-                <MdAdminPanelSettings  className='text-[55px]'/>
-
-            </div>
-
-
-            <div className={`absolute top-16  left-0 sm:hidden block w-full  min-h-screen bg-white 
-                 overflow-hidden transition-all duration-700 ease-in-out
-  ${showMenu
-                    ? "max-h-[500px] translate-y-0 scale-100 opacity-100"
-                    : "max-h-0 translate-y-2  opacity-0"}
-
-                        `}>
-
-                <nav className="flex flex-col">
-
-                    {
-                        navItems.map((obj, index) => {
-                            return (
-                                <>
-                                    <Link onClick={showNav} to={obj.path} className={`cursor-pointer p-4 pl-5 border-b-1 border-gray-200
-                                       `}  >
-
-
-                                        {obj.name}
-                                    </Link>
-
-
-                                </>
-                            )
-                        })
-                    }
-                    <div onClick={logout} className={`cursor-pointer text-red-600 p-4 pl-5 border-b-1 border-gray-200
-                                       `}  >
-
-                        Logout
-
-                    </div>
-
-
-
-                </nav >
-
-            </div >
-
-        </header >
-    )
+          <button
+            onClick={logout}
+            className="text-left p-4 pl-5 border-b border-gray-200 text-red-600 font-medium"
+          >
+            Logout
+          </button>
+        </nav>
+      </div>
+    </header>
+  );
 }
-
-

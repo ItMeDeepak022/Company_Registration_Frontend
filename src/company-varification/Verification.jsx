@@ -19,14 +19,12 @@ export default function CompanyVerification() {
                 `/verify/${companyId}`
             );
 
-            console.log(res.data);
-
             if (res.data.status) {
-                alert(res.data.message);
+                toast.success(res.data.message);
                 navigate('/dashboard/companies')
                 getCompanies();
             } else {
-                alert(res.data.message);
+                toast.error(res.data.message);
             }
 
             setLoadingId(null);
@@ -34,10 +32,10 @@ export default function CompanyVerification() {
         } catch (error) {
 
             console.log(
-                error.response?.data || error
+                toast.error(error.response?.data || error)
             );
 
-            alert(
+            toast.error(
                 error.response?.data?.message ||
                 "Verification failed"
             );
@@ -67,20 +65,9 @@ export default function CompanyVerification() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50 px-5 py-18 ">
+        <div className="min-h-screen bg-gray-50 px-5 py-15 ">
             <ToastContainer />
-            {/* Header */}
-            <div className="mx-auto mb-8 max-w-7xl ">
-
-                <h1 className="text-2xl font-bold text-gray-800 sm:text-3xl">
-                    Company Verification
-                </h1>
-
-                <p className="mt-2 text-sm text-gray-500">
-                    Verify the registered company details.
-                </p>
-
-            </div>
+            
 
             {/* Company Cards */}
             <div className="mx-auto grid max-w-full  grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">

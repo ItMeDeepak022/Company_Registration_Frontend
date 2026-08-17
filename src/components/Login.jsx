@@ -1,318 +1,356 @@
-import axios from 'axios';
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router'
-import api from '../services/api';
-import { ToastContainer, toast } from 'react-toastify';
+import React, { useState } from "react";
+import { useNavigate } from "react-router";
+import api from "../services/api";
+import { ToastContainer, toast } from "react-toastify";
 
+// Underline-style inputs (minimal, like the reference)
+const inputClass =
+    "w-full border-b-2 border-slate-200 bg-transparent px-1 py-2.5 text-slate-900 placeholder:text-slate-300 transition focus:border-indigo-600 focus:outline-none";
+const labelClass = "mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400";
+const primaryButtonClass =
+    "w-full rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3.5 text-sm font-bold uppercase tracking-wide text-white shadow-lg shadow-indigo-200 transition duration-200 hover:from-indigo-700 hover:to-violet-700 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-60";
+
+// Converts technical / API errors into a readable message (never show raw error objects)
+function getErrorMessage(err) {
+    if (err?.response?.data?.message) return err.response.data.message;
+    if (err?.message === "Network Error") {
+        return "Unable to reach the server. Please check your internet connection.";
+    }
+    return "Something went wrong. Please try again.";
+}
+
+// Original night-scene illustration (hand-built SVG, not a copied image)
+function NightSceneIllustration() {
+    return (
+        <svg
+            viewBox="0 0 600 700"
+            className="h-full w-full"
+            preserveAspectRatio="xMidYMax slice"
+        >
+            <defs>
+                <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#2a1458" />
+                    <stop offset="55%" stopColor="#4c2a8f" />
+                    <stop offset="100%" stopColor="#6d3fc0" />
+                </linearGradient>
+                <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#fff8e7" stopOpacity="0.9" />
+                    <stop offset="100%" stopColor="#fff8e7" stopOpacity="0" />
+                </radialGradient>
+                <linearGradient id="mtn1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#5b3399" />
+                    <stop offset="100%" stopColor="#452a7a" />
+                </linearGradient>
+                <linearGradient id="mtn2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#3d2568" />
+                    <stop offset="100%" stopColor="#2f1d52" />
+                </linearGradient>
+                <linearGradient id="doorGlow" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#ffe9a8" />
+                    <stop offset="100%" stopColor="#ffb44d" />
+                </linearGradient>
+                <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#7fe0d6" stopOpacity="0.55" />
+                    <stop offset="100%" stopColor="#7fe0d6" stopOpacity="0.05" />
+                </linearGradient>
+            </defs>
+
+            {/* sky */}
+            <rect x="0" y="0" width="600" height="700" fill="url(#sky)" />
+
+            {/* stars */}
+            {[
+                [60, 60], [120, 110], [200, 50], [260, 130], [340, 70],
+                [400, 40], [460, 100], [520, 60], [90, 180], [500, 180],
+                [30, 260], [560, 240], [160, 90], [230, 200], [380, 150],
+            ].map(([cx, cy], i) => (
+                <circle key={i} cx={cx} cy={cy} r={i % 3 === 0 ? 2.5 : 1.4} fill="#fff" opacity={0.8} />
+            ))}
+
+            {/* moon */}
+            <circle cx="500" cy="90" r="70" fill="url(#moonGlow)" />
+            <circle cx="500" cy="90" r="30" fill="#fffaf0" />
+
+            {/* far mountains */}
+            <polygon points="0,340 100,230 220,320 320,210 420,300 520,240 600,320 600,700 0,700" fill="url(#mtn2)" />
+            {/* near mountains */}
+            <polygon points="0,420 140,300 260,400 360,280 480,390 600,330 600,700 0,700" fill="url(#mtn1)" />
+
+            {/* pine trees */}
+            {[[60, 430], [110, 460], [500, 420], [550, 450], [40, 480]].map(([x, y], i) => (
+                <g key={i} transform={`translate(${x} ${y})`} opacity="0.85">
+                    <polygon points="0,0 -18,40 18,40" fill="#241a4a" />
+                    <polygon points="0,15 -22,55 22,55" fill="#241a4a" />
+                </g>
+            ))}
+
+            {/* ground / reflection */}
+            <rect x="0" y="560" width="600" height="140" fill="url(#ground)" />
+
+            {/* house block */}
+            <rect x="360" y="380" width="200" height="180" fill="#3a2568" rx="4" />
+            <rect x="360" y="330" width="120" height="60" fill="#4a2f80" rx="4" />
+            <rect x="400" y="340" width="18" height="18" fill="#ffd98a" opacity="0.9" />
+            <rect x="430" y="340" width="18" height="18" fill="#ffd98a" opacity="0.6" />
+            {/* solar panel */}
+            <rect x="440" y="358" width="55" height="30" fill="#2a2050" stroke="#6d5bb3" strokeWidth="1" />
+            <line x1="440" y1="373" x2="495" y2="373" stroke="#6d5bb3" strokeWidth="1" />
+            <line x1="458" y1="358" x2="458" y2="388" stroke="#6d5bb3" strokeWidth="1" />
+            <line x1="476" y1="358" x2="476" y2="388" stroke="#6d5bb3" strokeWidth="1" />
+
+            {/* open door with light beam */}
+            <polygon points="250,560 250,330 320,330 340,560" fill="url(#doorGlow)" opacity="0.9" />
+            <rect x="250" y="330" width="70" height="230" fill="#241a4a" opacity="0.15" />
+            <rect x="320" y="330" width="40" height="230" fill="#6d3fc0" opacity="0.35" />
+
+            {/* steps */}
+            <rect x="240" y="560" width="110" height="16" fill="#4a2f80" />
+            <rect x="230" y="576" width="130" height="16" fill="#3a2568" />
+            <rect x="215" y="592" width="160" height="18" fill="#2f1d52" />
+
+            {/* bushes */}
+            <circle cx="180" cy="600" r="34" fill="#3a2568" />
+            <circle cx="150" cy="615" r="26" fill="#4a2f80" />
+            <circle cx="410" cy="605" r="30" fill="#3a2568" />
+        </svg>
+    );
+}
 
 export default function Login() {
-
-    let [show, setshow] = useState(true)
+    const [isLogin, setIsLogin] = useState(true);
     const [loading, setLoading] = useState(false);
     const [registerLoading, setRegisterLoading] = useState(false);
 
+    const navigate = useNavigate();
 
-    let showhide = () => {
-        setshow(!show)
-    }
-    let navigate = useNavigate()
+    const toggleMode = () => setIsLogin((prev) => !prev);
 
-
-
-
-    const submitedData = async (e) => {
+    const submitLogin = async (e) => {
         e.preventDefault();
+        const data = {
+            email: e.target.email.value,
+            password: e.target.password.value,
+        };
 
-
-
-        // console.log(data);
-
+        setLoading(true);
         try {
+            const res = await api.post("/user-auth/login", data);
+            const finalRes = res.data;
 
-            if (show) {
-
-                const data = {
-                    email: e.target.email.value,
-                    password: e.target.password.value,
-                };
-
-                setLoading(true)
-                const res = await api.post("/user-auth/login", data);
-                const finalRes = res.data;
-                if (finalRes.status) {
-                    localStorage.setItem("token", finalRes.token);
-                    setLoading(false)
-                    toast.success(finalRes.message);
-                    e.target.reset();
-                    setTimeout(() => {
-                        navigate("/dashboard");
-                    }, 500);
-
-                } else {
-                    toast.success(finalRes.message);
-                    setLoading(false)
-                }
-
+            if (finalRes.status) {
+                localStorage.setItem("token", finalRes.token);
+                toast.success(finalRes.message || "Logged in successfully");
+                e.target.reset();
+                setTimeout(() => navigate("/dashboard"), 500);
+            } else {
+                // A failed login must show an error, never a success toast
+                toast.error(finalRes.message || "Invalid email or password");
             }
+        } catch (err) {
+            toast.error(getErrorMessage(err));
+        } finally {
+            // Loading state always resets, even on failure/exception
+            setLoading(false);
+        }
+    };
 
-            else {
+    const submitRegister = async (e) => {
+        e.preventDefault();
+        const data = {
+            name: e.target.name.value,
+            email: e.target.email.value,
+            password: e.target.password.value,
+        };
 
-                const data = {
-                    name: e.target.name.value,
-                    email: e.target.email.value,
-                    password: e.target.password.value,
-                };
+        setRegisterLoading(true);
+        try {
+            const res = await api.post("/user-auth/register", data);
+            const finalRes = res.data;
 
-
-                setRegisterLoading(true)
-                const res = await api.post("/user-auth/register", data);
-                const finalRes = res.data;
-                if (finalRes.status) {
-                    setRegisterLoading(false)
-                    toast.success(finalRes.message);
-                    e.target.reset();
-                    showhide()
-
-                } else {
-                    toast.success(finalRes.message);
-                    setRegisterLoading(false)
-                }
-
+            if (finalRes.status) {
+                toast.success(finalRes.message);
+                e.target.reset();
+                setIsLogin(true);
+            } else {
+                toast.error(finalRes.message || "Registration failed");
             }
+        } catch (err) {
+            toast.error(getErrorMessage(err));
+        } finally {
+            setRegisterLoading(false);
         }
-        catch (err) {
-            toast.error(err)
-        }
-
-    }
-
+    };
 
     return (
-        <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-1">
-            <ToastContainer />
-            <div className="w-full sm:mt-0 mt-[-70px] max-w-5xl overflow-hidden rounded-2xl shadow-2xl shadow-slate-300/60 border border-slate-200 bg-white">
+        <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 sm:py-10">
+            <style>{`
+                @keyframes formSwitch {
+                    0% { opacity: 0; transform: translateY(10px); }
+                    100% { opacity: 1; transform: translateY(0); }
+                }
+                .animate-form-switch {
+                    animation: formSwitch 0.35s ease-out;
+                }
+            `}</style>
+            <ToastContainer position="top-left" />
+
+            <div className="relative w-full max-w-5xl overflow-hidden rounded-[10px] sm:rounded-[2.5rem] bg-white shadow-2xl shadow-slate-300/60 transition-[height] duration-300">
                 <div className="grid md:grid-cols-2">
-                    <div className="relative hidden md:flex flex-col justify-between bg-black  p-10 text-white">
-                        <div>
-                            <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/5 px-3 py-2 backdrop-blur-sm">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-500 text-sm font-bold text-white">
-                                    CR
-                                </div>
-                                <span className="text-sm font-medium tracking-[0.22em] uppercase text-slate-200">
-                                    VerifyFlow
-                                </span>
-                            </div>
-
-                            <h1 className="max-w-sm text-4xl font-bold leading-tight">
-                                Secure company verification for smarter decisions.
-                            </h1>
+                    {/* Left: form panel */}
+                    <div className="relative z-10 p-8 sm:p-12 lg:p-14">
+                        <div className="mb-10 flex items-center gap-2">
+                            <span className="h-3 w-3 rounded-full bg-orange-400" />
+                            <span className="text-lg font-bold tracking-tight text-slate-800">
+                                VerifyFlow
+                            </span>
                         </div>
 
-                        <div className="space-y-5">
-                            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/20 text-blue-200">
-                                    ✓
-                                </div>
+                        <div key={isLogin ? "login" : "register"} className="animate-form-switch">
+                        <p className="text-sm font-semibold text-slate-400">
+                            {isLogin ? "Welcome to" : "Get started with"}
+                        </p>
+                        <h1 className="mb-8 text-4xl font-extrabold text-indigo-900">
+                            VerifyFlow
+                        </h1>
+
+                        {isLogin ? (
+                            <form onSubmit={submitLogin} className="space-y-6">
                                 <div>
-                                    <p className="font-semibold">Trusted compliance checks</p>
-                                    <p className="text-sm text-slate-300">Verified business records</p>
+                                    <label htmlFor="email" className={labelClass}>
+                                        Email
+                                    </label>
+                                    <input
+                                        id="email"
+                                        type="email"
+                                        required
+                                        name="email"
+                                        placeholder="name@company.com"
+                                        className={inputClass}
+                                    />
                                 </div>
-                            </div>
 
-                            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-200">
-                                    ⚡
-                                </div>
                                 <div>
-                                    <p className="font-semibold">Fast onboarding</p>
-                                    <p className="text-sm text-slate-300">Streamlined approval process</p>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-
-                    {
-                        show ?
-                            //logic logic 
-                            <div className="bg-white p-8 sm:p-10 lg:p-12">
-                                <div className="mb-8">
-                                    <p className="text-sm font-semibold uppercase tracking-[0.22em] text-blue-600">
-                                        Welcome back
-                                    </p>
-                                    <h2 className="mt-3 text-3xl font-bold text-slate-900">Login to your account</h2>
+                                    <label htmlFor="password" className={labelClass}>
+                                        Password
+                                    </label>
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        required
+                                        type="password"
+                                        placeholder="••••••••"
+                                        className={inputClass}
+                                    />
                                 </div>
 
-                                <form onSubmit={submitedData} className="space-y-6">
-                                    <div>
-                                        <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
-                                            Email address
-                                        </label>
-                                        <input
-                                            id="email"
-                                            type="email"
-                                            required
-                                            name='email'
-                                            placeholder="name@company.com"
-                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-100"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <div className="mb-2 flex items-center justify-between">
-                                            <label htmlFor="password" className="block text-sm font-medium text-slate-700">
-                                                Password
-                                            </label>
-
-                                        </div>
-                                        <input
-                                            id="password"
-                                            name='password'
-                                            required
-                                            type="password"
-                                            placeholder="Enter your password"
-                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-100"
-                                        />
-                                    </div>
-
-
-
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-200 transition duration-200 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-70"
-                                    >
+                                <div className="pt-2">
+                                    <button type="submit" disabled={loading} className={primaryButtonClass}>
                                         {loading ? (
                                             <span className="flex items-center justify-center gap-2">
-                                                <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                                                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                                                 Signing in...
                                             </span>
                                         ) : (
-                                            "Sign in"
+                                            "Login"
                                         )}
                                     </button>
-
-                                    <a href="#" className="text-sm font-medium text-blue-600 hover:text-blue-700">
-                                        Forgot password?
-                                    </a>
-                                </form>
-
-                                <div className="sm:mt-8 mt-3 flex items-center gap-3">
-                                    <div className="h-px flex-1 bg-slate-200" />
-                                    <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
-                                        Or continue to create
-                                    </span>
-                                    <div className="h-px flex-1 bg-slate-200" />
                                 </div>
 
-                                <p
-                                    onClick={showhide}
-                                    className="sm:mt-8 mt-1 text-center cursor-pointer justify-center flex sm:flex-row sm:gap-2 flex-col text-sm text-slate-600"
-                                >
-                                    Don&apos;t have an account?{" "}
-                                    <span className="font-semibold text-blue-600 hover:text-blue-700">
-                                        Create account
-                                    </span>
+                                {/* TODO: wire up forgot-password flow before enabling this link */}
+                                <p className="text-xs font-medium text-slate-300 cursor-not-allowed">
+                                    Forgot password? (coming soon)
                                 </p>
-                            </div>
-                            :
-                            // register logic
-                            <div className="w-full max-w-md bg-white  p-8">
-                                {/* Header */}
-                                <div className="text-center mb-8">
-                                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-                                    <p className="text-gray-600">Join us today to get started</p>
+                            </form>
+                        ) : (
+                            <form onSubmit={submitRegister} className="space-y-6">
+                                <div>
+                                    <label htmlFor="name" className={labelClass}>
+                                        Full name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        name="name"
+                                        required
+                                        placeholder="John Doe"
+                                        className={inputClass}
+                                    />
                                 </div>
 
-                                {/* Form */}
-                                <form onSubmit={submitedData} className="space-y-6">
-                                    {/* Name Input */}
-                                    <div>
-                                        <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Full Name
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="name"
-                                            name="name"
+                                <div>
+                                    <label htmlFor="reg-email" className={labelClass}>
+                                        Email
+                                    </label>
+                                    <input
+                                        type="email"
+                                        id="reg-email"
+                                        name="email"
+                                        required
+                                        placeholder="you@example.com"
+                                        className={inputClass}
+                                    />
+                                </div>
 
-                                            placeholder="John Doe"
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                                            required
-                                        />
-                                    </div>
+                                <div>
+                                    <label htmlFor="reg-password" className={labelClass}>
+                                        Password
+                                    </label>
+                                    <input
+                                        type="password"
+                                        id="reg-password"
+                                        name="password"
+                                        required
+                                        minLength={6}
+                                        placeholder="At least 6 characters"
+                                        className={inputClass}
+                                    />
+                                </div>
 
-                                    {/* Email Input */}
-                                    <div>
-                                        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Email Address
-                                        </label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            name="email"
-
-                                            placeholder="you@example.com"
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                                            required
-                                        />
-                                    </div>
-
-                                    {/* Password Input */}
-                                    <div>
-                                        <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Password
-                                        </label>
-                                        <input
-                                            type="password"
-                                            id="password"
-                                            name="password"
-
-                                            placeholder="••••••••"
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                                            required
-                                        />
-                                    </div>
-
-                                    {/* Submit Button */}
+                                <div className="pt-2">
                                     <button
                                         type="submit"
                                         disabled={registerLoading}
-                                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition duration-200 disabled:cursor-not-allowed disabled:opacity-70"
+                                        className={primaryButtonClass}
                                     >
                                         {registerLoading ? (
                                             <span className="flex items-center justify-center gap-2">
-                                                <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                                                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                                                 Creating account...
                                             </span>
                                         ) : (
                                             "Register"
                                         )}
                                     </button>
-                                </form>
-
-                                {/* Sign In Link */}
-                                <div
-                                    onClick={showhide}
-                                    className="text-center sm:mt-6 mt-1 cursor-pointer"
-                                >
-                                    <p className="text-gray-600 text-sm justify-center flex sm:flex-row gap-2 flex-col">
-                                        Already have an account?{" "}
-                                        <span className="text-indigo-600 hover:text-indigo-700 font-semibold">
-                                            Sign In
-                                        </span>
-                                    </p>
                                 </div>
-                            </div>
-                    }
+                            </form>
+                        )}
+                        </div>
 
+                        <p className="mt-10 text-sm text-slate-500">
+                            {isLogin ? "Don't have an account? " : "Already have an account? "}
+                            <span
+                                onClick={toggleMode}
+                                className="cursor-pointer font-semibold text-indigo-600 hover:text-indigo-700"
+                            >
+                                {isLogin ? "Sign up" : "Sign in"}
+                            </span>
+                        </p>
+                    </div>
 
-
-
+                    {/* Right: illustrated panel */}
+                    <div
+                        className="relative hidden md:block"
+                        style={{ borderTopLeftRadius: "220px", borderBottomLeftRadius: "220px" }}
+                    >
+                        <div
+                            className="absolute inset-0 overflow-hidden"
+                            style={{ borderTopLeftRadius: "220px", borderBottomLeftRadius: "220px" }}
+                        >
+                            <NightSceneIllustration />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    )
-
+    );
 }

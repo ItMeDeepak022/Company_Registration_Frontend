@@ -26,15 +26,7 @@ export default function AllCompanies() {
     return (
         <div className="min-h-screen sm:m-0 m-3 py-18 sm:px-10 ">
 
-            <div className="mx-auto mb-5 max-w-7xl">
-                <h1 className="text-2xl font-bold text-gray-800 sm:text-3xl">
-                    All Registered Companies
-                </h1>
-
-                <p className="mt-2 text-sm text-gray-500">
-                    View all registered companies
-                </p>
-            </div>
+             
 
             <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
