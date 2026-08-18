@@ -21,7 +21,7 @@ export default function ProtectedRoute({ children }) {
                     },
                 });
 
-                console.log("Verify response:", res.data);
+                // console.log("Verify response:", res.data);
 
                 if (res.data.status) {
                     setIsValid(true);

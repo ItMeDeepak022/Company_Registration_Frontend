@@ -181,176 +181,355 @@ export default function Login() {
         }
     };
 
-    return (
-        <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 sm:py-10">
-            <style>{`
-                @keyframes formSwitch {
-                    0% { opacity: 0; transform: translateY(10px); }
-                    100% { opacity: 1; transform: translateY(0); }
-                }
-                .animate-form-switch {
-                    animation: formSwitch 0.35s ease-out;
-                }
-            `}</style>
-            <ToastContainer position="top-left" />
 
-            <div className="relative w-full max-w-5xl overflow-hidden rounded-[10px] sm:rounded-[2.5rem] bg-white shadow-2xl shadow-slate-300/60 transition-[height] duration-300">
-                <div className="grid md:grid-cols-2">
-                    {/* Left: form panel */}
-                    <div className="relative z-10 p-8 sm:p-12 lg:p-14">
-                        <div className="mb-10 flex items-center gap-2">
-                            <span className="h-3 w-3 rounded-full bg-orange-400" />
-                            <span className="text-lg font-bold tracking-tight text-slate-800">
-                                VerifyFlow
-                            </span>
+    return (
+        <div className="min-h-screen w-full bg-slate-100 sm:block flex items-center sm:p-0 ">
+
+            <ToastContainer position="top-right" />
+
+            <div className="max-w-full sm:min-h-screen grid grid-cols-1 sm:p-0 p-10 sm:m-0 m-2 sm:grid-cols-[62%_auto] bg-white shadow-lg ">
+
+
+
+                <div className="relative hidden  overflow-hidden lg:block ">
+
+                    <img
+                        src="https://cdn.dribbble.com/userupload/8432950/file/original-0c14504bd291054d76548cb015dff89a.png?resize=1504x1128&vertical=center"
+                        alt="Company management"
+                        className="absolute inset-0 h-full w-full object-cover"
+                    />
+
+
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-indigo-950/90 via-indigo-900/30 to-transparent" />
+
+
+                    {/* Content */}
+                    <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-10 xl:p-14">
+
+                        <div className="max-w-xl">
+
+                            <div className="mb-4 inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md">
+
+                                <span className="text-xs font-semibold text-white">
+                                    Secure Company Verification
+                                </span>
+
+                            </div>
+
+
+                            <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl xl:text-5xl">
+                                Verify businesses.
+                                <br />
+
+                                <span className="text-indigo-200">
+                                    Build trusted relationships.
+                                </span>
+                            </h2>
+
+
+                            <p className="mt-4 max-w-lg text-sm leading-6 text-white/70 sm:text-base">
+                                Manage company registration, verification,
+                                and business information securely from one
+                                simple platform.
+                            </p>
+
                         </div>
 
-                        <div key={isLogin ? "login" : "register"} className="animate-form-switch">
-                        <p className="text-sm font-semibold text-slate-400">
-                            {isLogin ? "Welcome to" : "Get started with"}
-                        </p>
-                        <h1 className="mb-8 text-4xl font-extrabold text-indigo-900">
-                            VerifyFlow
-                        </h1>
+                    </div>
+
+                </div>
+
+                <div className="flex w-full justify-center items-center bg-white ">
+
+                    <div className="w-full max-w-md">
+
+                        {/* Logo */}
+                        <div className="mb-5 sm:mb-10">
+                            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                                VerifyFlow
+                            </h2>
+
+                            <div className="mt-2 h-1 w-8 rounded-full bg-blue-700" />
+                        </div>
+
+                        {/* ================= HEADER ================= */}
+
+                        <div className="mb-5">
+
+                            <p className="mb-2 text-sm font-semibold text-indigo-600">
+                                {isLogin
+                                    ? "Welcome back"
+                                    : "Create your account"}
+                            </p>
+
+                            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl ">
+                                {isLogin
+                                    ? "Sign in to your account"
+                                    : "Create a new account"}
+                            </h1>
+
+                            <p className="mt-2 text-sm leading-6 text-slate-500">
+                                {isLogin
+                                    ? "Sign in to manage your company verification."
+                                    : "Create your account to start managing company verification."}
+                            </p>
+
+                        </div>
+
+
+
+                        {/* LOGIN FORM */}
 
                         {isLogin ? (
-                            <form onSubmit={submitLogin} className="space-y-6">
+
+                            <form
+                                onSubmit={submitLogin}
+                                className="space-y-5"
+                            >
+
+                                {/* Email */}
                                 <div>
-                                    <label htmlFor="email" className={labelClass}>
-                                        Email
+
+                                    <label
+                                        htmlFor="email"
+                                        className="mb-2 block text-sm font-semibold text-slate-700"
+                                    >
+                                        Email address
                                     </label>
+
                                     <input
                                         id="email"
+                                        name="email"
                                         type="email"
                                         required
-                                        name="email"
                                         placeholder="name@company.com"
-                                        className={inputClass}
+                                        className="w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-50"
                                     />
+
                                 </div>
 
+
+                                {/* Password */}
                                 <div>
-                                    <label htmlFor="password" className={labelClass}>
-                                        Password
-                                    </label>
+
+                                    <div className="mb-2 flex items-center justify-between">
+
+                                        <label
+                                            htmlFor="password"
+                                            className="text-sm font-semibold text-slate-700"
+                                        >
+                                            Password
+                                        </label>
+
+                                        <button
+                                            type="button"
+                                            className="text-xs font-semibold text-indigo-600 transition hover:text-indigo-700"
+                                        >
+                                            Forgot password?
+                                        </button>
+
+                                    </div>
+
                                     <input
                                         id="password"
                                         name="password"
-                                        required
                                         type="password"
-                                        placeholder="••••••••"
-                                        className={inputClass}
+                                        required
+                                        placeholder="Enter your password"
+                                        className="w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-50"
                                     />
+
                                 </div>
 
-                                <div className="pt-2">
-                                    <button type="submit" disabled={loading} className={primaryButtonClass}>
-                                        {loading ? (
-                                            <span className="flex items-center justify-center gap-2">
-                                                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                                                Signing in...
-                                            </span>
-                                        ) : (
-                                            "Login"
-                                        )}
-                                    </button>
-                                </div>
 
-                                {/* TODO: wire up forgot-password flow before enabling this link */}
-                                <p className="text-xs font-medium text-slate-300 cursor-not-allowed">
-                                    Forgot password? (coming soon)
-                                </p>
+
+
+
+                                {/* Login Button */}
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full cursor-pointer rounded-[10px] bg-blue-700 px-5 py-3.5 text-sm font-bold text-white  transition-all duration-200  hover:bg-blue-800"
+                                >
+
+                                    {loading ? (
+
+                                        <span className="flex items-center justify-center gap-2">
+
+                                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+
+                                            Signing in...
+
+                                        </span>
+
+                                    ) : (
+
+                                        "Sign in"
+
+                                    )}
+
+                                </button>
+
                             </form>
+
                         ) : (
-                            <form onSubmit={submitRegister} className="space-y-6">
+
+
+                            /* =================================================
+                                REGISTER FORM
+                            ================================================= */
+
+                            <form
+                                onSubmit={submitRegister}
+                                className="space-y-5"
+                            >
+
+                                {/* Name */}
                                 <div>
-                                    <label htmlFor="name" className={labelClass}>
+
+                                    <label
+                                        htmlFor="name"
+                                        className="mb-2 block text-sm font-semibold text-slate-700"
+                                    >
                                         Full name
                                     </label>
+
                                     <input
-                                        type="text"
                                         id="name"
                                         name="name"
+                                        type="text"
                                         required
                                         placeholder="John Doe"
-                                        className={inputClass}
+                                        className="w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-50"
                                     />
+
                                 </div>
 
+
+                                {/* Email */}
                                 <div>
-                                    <label htmlFor="reg-email" className={labelClass}>
-                                        Email
+
+                                    <label
+                                        htmlFor="reg-email"
+                                        className="mb-2 block text-sm font-semibold text-slate-700"
+                                    >
+                                        Email address
                                     </label>
+
                                     <input
-                                        type="email"
                                         id="reg-email"
                                         name="email"
+                                        type="email"
                                         required
-                                        placeholder="you@example.com"
-                                        className={inputClass}
+                                        placeholder="name@company.com"
+                                        className="w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-50"
                                     />
+
                                 </div>
 
+
+                                {/* Password */}
                                 <div>
-                                    <label htmlFor="reg-password" className={labelClass}>
+
+                                    <label
+                                        htmlFor="reg-password"
+                                        className="mb-2 block text-sm font-semibold text-slate-700"
+                                    >
                                         Password
                                     </label>
+
                                     <input
-                                        type="password"
                                         id="reg-password"
                                         name="password"
+                                        type="password"
                                         required
                                         minLength={6}
-                                        placeholder="At least 6 characters"
-                                        className={inputClass}
+                                        placeholder="Minimum 6 characters"
+                                        className="w-full rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-50"
                                     />
+
                                 </div>
 
-                                <div className="pt-2">
-                                    <button
-                                        type="submit"
-                                        disabled={registerLoading}
-                                        className={primaryButtonClass}
-                                    >
-                                        {registerLoading ? (
-                                            <span className="flex items-center justify-center gap-2">
-                                                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                                                Creating account...
-                                            </span>
-                                        ) : (
-                                            "Register"
-                                        )}
-                                    </button>
-                                </div>
+
+                                {/* Register Button */}
+                                <button
+                                    type="submit"
+                                    disabled={registerLoading}
+                                    className="w-full rounded-[10px] bg-blue-700 px-5 py-3.5 text-sm font-bold text-white hover:bg-blue-800"
+                                >
+
+                                    {registerLoading ? (
+
+                                        <span className="flex items-center justify-center gap-2">
+
+                                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+
+                                            Creating account...
+
+                                        </span>
+
+                                    ) : (
+
+                                        "Create account"
+
+                                    )}
+
+                                </button>
+
                             </form>
+
                         )}
+
+
+
+
+                        {/* LOGIN / REGISTER SWITCH */}
+
+                        <div className="mt-7 cursor-pointer text-center text-sm text-slate-500">
+
+                            {isLogin ? (
+                                <>
+                                    Don't have an account?
+
+                                    <button
+                                        type="button"
+                                        onClick={toggleMode}
+                                        className="ml-1 cursor-pointer font-bold text-indigo-600 transition hover:text-indigo-700"
+                                    >
+                                        Create account
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    Already have an account?
+
+                                    <button
+                                        type="button"
+                                        onClick={toggleMode}
+                                        className="ml-1 cursor-pointer font-bold text-indigo-600 transition hover:text-indigo-700"
+                                    >
+                                        Sign in
+                                    </button>
+                                </>
+                            )}
+
                         </div>
 
-                        <p className="mt-10 text-sm text-slate-500">
-                            {isLogin ? "Don't have an account? " : "Already have an account? "}
-                            <span
-                                onClick={toggleMode}
-                                className="cursor-pointer font-semibold text-indigo-600 hover:text-indigo-700"
-                            >
-                                {isLogin ? "Sign up" : "Sign in"}
-                            </span>
-                        </p>
+
+
+
                     </div>
 
-                    {/* Right: illustrated panel */}
-                    <div
-                        className="relative hidden md:block"
-                        style={{ borderTopLeftRadius: "220px", borderBottomLeftRadius: "220px" }}
-                    >
-                        <div
-                            className="absolute inset-0 overflow-hidden"
-                            style={{ borderTopLeftRadius: "220px", borderBottomLeftRadius: "220px" }}
-                        >
-                            <NightSceneIllustration />
-                        </div>
-                    </div>
                 </div>
+
+
+
+
+
             </div>
+
         </div>
     );
+
 }

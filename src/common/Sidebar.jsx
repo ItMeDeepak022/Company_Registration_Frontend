@@ -23,7 +23,7 @@ export default function Sidebar() {
         <h1 className="text-lg font-semibold text-black">Dashboard</h1>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-4">
+      <nav className="flex-1 overflow-y-auto py-">
         {navItems.map((item) => (
           <NavLink
             key={item.path}

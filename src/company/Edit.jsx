@@ -18,6 +18,8 @@ export default function EditCompanyRegistration() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+         
+
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
 
@@ -43,7 +45,7 @@ export default function EditCompanyRegistration() {
 
             }
 
-             
+
         } catch (error) {
             toast.error(
                 error.response?.data?.message || "Company update failed. Please try again."
@@ -156,6 +158,7 @@ export default function EditCompanyRegistration() {
                                 name="password"
                                 type="password"
                                 minLength="6"
+                                required
                                 placeholder="Leave blank to keep current password"
                                 className={inputClass}
                             />
@@ -166,6 +169,7 @@ export default function EditCompanyRegistration() {
                             <input
                                 name="confirmPassword"
                                 type="password"
+                                required
                                 minLength="6"
                                 placeholder="Confirm new password"
                                 className={inputClass}
