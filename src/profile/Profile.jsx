@@ -13,10 +13,11 @@ function SkeletonBlock({ className }) {
 
 export default function Profile() {
     const [companies, setCompanies] = useState([]);
-    const [userData, setUserData] = useState({});
+    const [userData, setUserData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
+    console.log(userData, "data hai");
     const getCompanies = () => {
         setLoading(true);
         setError("");
@@ -26,8 +27,7 @@ export default function Profile() {
             .then((finalRes) => {
                 const data = finalRes.data || [];
                 setCompanies(data);
-                // Guard against an empty list — there may be no company yet
-                setUserData(data.length > 0 ? data[0].userId : {});
+
             })
             .catch((err) => {
                 setError(
@@ -38,11 +38,22 @@ export default function Profile() {
             .finally(() => setLoading(false));
     };
 
+    let getUserData = async () => {
+        await api.get('/user-auth/get-user')
+            .then((res) => res.data)
+            .then((finalRes) => {
+                console.log(finalRes);
+                setUserData(finalRes.data);
+            })
+    }
+
     useEffect(() => {
+        getUserData();
         getCompanies();
+
     }, []);
 
-    const initial = userData?.name?.charAt(0)?.toUpperCase() || "?";
+    
 
     return (
         <div className="h-screen bg-slate-50 px-3 pt-5 sm:pb-0 pb-20 py-10 sm:px-6">
@@ -74,25 +85,35 @@ export default function Profile() {
                                 </div>
                             ) : (
                                 <>
-                                    {/* Avatar */}
-                                    <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-2xl font-bold text-white shadow-md shadow-indigo-100">
-                                        {initial}
-                                    </div>
+                                    {/* profile  */}
+                                    {
+                                        userData.map((obj) => {
+                                            let {name}=obj
+                                            let fn=name.charAt(0)
+                                            return (
+                                                <>
+                                                    <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-blue-700 text-2xl font-bold text-white  ">
+                                                        {fn}
+                                                    </div>
 
-                                    <h2 className="text-xl font-bold text-slate-800">
-                                        {userData?.name || "—"}
-                                    </h2>
+                                                    <h2 className="text-xl font-bold text-slate-800">
+                                                        {obj.name}
+                                                    </h2>
 
-                                    <div className="mt-5 space-y-4">
-                                        <div>
-                                            <p className="text-sm text-slate-500">Email</p>
-                                            <p className="break-all font-medium text-slate-800">
-                                                {userData?.email || "—"}
-                                            </p>
-                                        </div>
+                                                    <div className="mt-5 space-y-4">
+                                                        <div>
+                                                            <p className="text-sm text-slate-500">Email</p>
+                                                            <p className="break-all font-medium text-slate-800">
+                                                                {obj.email}
+                                                            </p>
+                                                        </div>
 
 
-                                    </div>
+                                                    </div>
+                                                </>
+                                            )
+                                        })
+                                    }
                                 </>
                             )}
                         </div>

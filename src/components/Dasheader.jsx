@@ -25,10 +25,24 @@ export default function Dasheader() {
     navigate("/");
   }
 
-  const [userData, setUserData] = useState({});
+let [fname, setfname] = useState('')
 
-  let { name, email } = userData
-  let firstLetter = name?.charAt(0).toUpperCase();
+  let getUserData = async () => {
+    await api.get('/user-auth/get-user')
+      .then((res) => res.data)
+      .then((finalRes) => {
+        console.log(finalRes);
+        setfname(finalRes.data[0].name)
+      })
+  }
+
+  useEffect(() => {
+    getUserData();
+
+  }, []);
+
+  
+  let firstLetter = fname?.charAt(0).toUpperCase();
 
   const getCompanies = () => {
 
@@ -102,8 +116,8 @@ export default function Dasheader() {
 
       <div
         className={`absolute left-0 top-16 min-h-screen w-full bg-white lg:hidden overflow-hidden transform transition-transform duration-500 ease-in-out ${showMenu
-            ? "translate-x-0"
-            : "-translate-x-full"
+          ? "translate-x-0"
+          : "-translate-x-full"
           }`}
       >
         <nav className="flex flex-col">
