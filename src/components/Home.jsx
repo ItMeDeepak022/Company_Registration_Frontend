@@ -238,11 +238,7 @@ export default function Home() {
             </p>
           </div>
 
-          <select className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 outline-none focus:border-blue-500 sm:w-auto">
-            <option>Last 6 Months</option>
-            <option>Last 12 Months</option>
-            <option>This Year</option>
-          </select>
+           
 
         </div>
 

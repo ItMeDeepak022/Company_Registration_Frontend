@@ -101,11 +101,11 @@ export default function AllCompanies() {
                                 </div>
 
                                 {/* Icon */}
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50">
+                                {/* <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50">
                                     <span className="text-lg font-bold text-blue-600">
                                         {company.companyName?.charAt(0).toUpperCase()}
                                     </span>
-                                </div>
+                                </div> */}
 
                             </div>
 
