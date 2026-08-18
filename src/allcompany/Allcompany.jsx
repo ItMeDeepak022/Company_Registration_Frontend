@@ -28,7 +28,7 @@ export default function AllCompanies() {
     const [companies, setcompanies] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const getCompanies = () => {
+    const getCompaniesData = () => {
 
         setLoading(true);
 
@@ -54,7 +54,7 @@ export default function AllCompanies() {
     };
 
     useEffect(() => {
-        getCompanies();
+        getCompaniesData();
     }, []);
 
     return (
