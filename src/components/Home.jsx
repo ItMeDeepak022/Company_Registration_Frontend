@@ -154,6 +154,7 @@ export default function Home() {
               <SkeletonCard />
             </>
           ) : (
+
             dashboardCards.map((card) => {
               const Icon = card.icon;
 
@@ -215,6 +216,7 @@ export default function Home() {
                 </div>
               );
             })
+
           )
         }
 
@@ -238,7 +240,7 @@ export default function Home() {
             </p>
           </div>
 
-           
+
 
         </div>
 

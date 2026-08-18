@@ -3,6 +3,7 @@ import api from "../services/api";
 
 import { useNavigate } from "react-router";
 import { toast, ToastContainer } from "react-toastify";
+import { Building2 } from "lucide-react";
 
 
 
@@ -65,15 +66,93 @@ export default function CompanyRegistration() {
     };
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen ">
             <ToastContainer />
 
-            <div className="mx-auto  w-full max-w-6xl pt-0 sm:pb-20 pb-15">
+            <div className=" max-w-full sm:flex flex-row-reverse ">
 
-                 
+                {/* Notice / Guidance card */}
+                <div className="sm:block hidden m-2 mb-5 w-full max-w-[500px] h-[500px] bg-white">
+                    <div className="flex flex-col gap-3 p-4 sm:gap-5 sm:p-5">
+
+                        {/* Icon */}
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm sm:h-12 sm:w-12">
+                            <Building2 className="h-5 w-5" />
+                        </div>
+
+                        {/* Content */}
+                        <div className="min-w-0 flex-1">
+
+                            {/* Header */}
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                <h3 className="text-base font-bold text-slate-900 sm:text-lg">
+                                    Company Registration Guide
+                                </h3>
+
+                                <span className="inline-flex w-fit shrink-0 items-center rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                                    Verification Ready
+                                </span>
+                            </div>
+
+                            {/* Description */}
+                            <p className="mt-2 text-sm leading-6 text-slate-600">
+                                Please complete the form with your official company details.
+                                Accurate information helps speed up verification and prevents
+                                delays in approval.
+                            </p>
+
+                            {/* Checklist */}
+                            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+
+                                {/* Required Documents */}
+                                <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+                                        Required documents
+                                    </p>
+
+                                    <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-slate-600">
+                                        <li>PAN card</li>
+                                        <li>Registration certificate</li>
+                                        <li>Business address proof</li>
+                                        <li>Authorized contact details</li>
+                                    </ul>
+                                </div>
+
+                                {/* Before Submit */}
+                                <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+                                        Before you submit
+                                    </p>
+
+                                    <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-slate-600">
+                                        <li>Use official company name</li>
+                                        <li>Enter valid email and phone</li>
+                                        <li>Match registration number</li>
+                                        <li>Keep password at least 6 chars</li>
+                                    </ul>
+                                </div>
+
+                                {/* Checklist */}
+                                <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+                                        Form checklist
+                                    </p>
+
+                                    <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-slate-600">
+                                        <li>Company name and address</li>
+                                        <li>Registration and PAN details</li>
+                                        <li>Contact information</li>
+                                        <li>Secure login password</li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Form Container */}
-                <div className="m-2 sm:rounded-xl border bg-white border-slate-200">
+                <div className="flex-1 m-2 sm:rounded-xl border bg-white border-slate-200 sm:pb-0 mb-15">
 
                     <div className=" border-b border-slate-200 px-5 py-5 sm:px-7">
                         <h2 className="text-base font-semibold text-slate-900">
@@ -261,7 +340,7 @@ export default function CompanyRegistration() {
                         </div>
 
                         {/* Submit Section */}
-                        <div className="w-[50%] mt-7 border-t border-slate-200 pt-6">
+                        <div className="sm:w[80%] w-[100%] mt-7 border-t border-slate-200 pt-6">
                             <button
                                 type="submit"
                                 disabled={loader}
@@ -281,6 +360,8 @@ export default function CompanyRegistration() {
                     </form>
                 </div>
             </div>
+
+
         </div>
     );
 }

@@ -99,35 +99,65 @@ export default function Dasheader() {
       </div>
 
       {/* Mobile dropdown nav */}
+
       <div
-        className={`absolute left-0 top-16 w-full min-h-screen bg-white lg:hidden
-          overflow-hidden transition-all duration-500 ease-in-out
-          ${showMenu ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}`}
+        className={`absolute left-0 top-16 min-h-screen w-full bg-white lg:hidden overflow-hidden transform transition-transform duration-500 ease-in-out ${showMenu
+            ? "translate-x-0"
+            : "-translate-x-full"
+          }`}
       >
         <nav className="flex flex-col">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.path === "/dashboard"}
-              onClick={toggleMenu}
-              className={({ isActive }) =>
-                `p-4 pl-5 border-b border-gray-200 ${isActive ? "bg-blue-50 text-blue-600 font-semibold" : "text-slate-700"
-                }`
-              }
-            >
-              {item.name}
-            </NavLink>
-          ))}
+
+          <NavLink
+            to="/dashboard"
+            onClick={() => setShowMenu(false)}
+            className="border-b border-gray-200 p-4 pl-5 text-slate-700"
+          >
+            Dashboard
+          </NavLink>
+
+          <NavLink
+            to="/dashboard/company-registration"
+            onClick={() => setShowMenu(false)}
+            className="border-b border-gray-200 p-4 pl-5 text-slate-700"
+          >
+            Company Registration
+          </NavLink>
+
+          <NavLink
+            to="/dashboard/company-verification"
+            onClick={() => setShowMenu(false)}
+            className="border-b border-gray-200 p-4 pl-5 text-slate-700"
+          >
+            Company Verification
+          </NavLink>
+
+          <NavLink
+            to="/dashboard/companies"
+            onClick={() => setShowMenu(false)}
+            className="border-b border-gray-200 p-4 pl-5 text-slate-700"
+          >
+            All Companies
+          </NavLink>
+
+          <NavLink
+            to="/dashboard/profile"
+            onClick={() => setShowMenu(false)}
+            className="border-b border-gray-200 p-4 pl-5 text-slate-700"
+          >
+            Profile
+          </NavLink>
 
           <button
             onClick={logout}
-            className="text-left p-4 pl-5 border-b border-gray-200 text-red-600 font-medium"
+            className="border-b border-gray-200 p-4 pl-5 text-left text-red-600"
           >
             Logout
           </button>
+
         </nav>
       </div>
+
     </header>
   );
 }
