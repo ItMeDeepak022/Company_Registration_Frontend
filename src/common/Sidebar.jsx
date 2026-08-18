@@ -18,12 +18,12 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="hidden lg:flex lg:flex-col w-64 bg-[#d9dde002] border-r border-gray-200 fixed left-0 top-0 bottom-0 z-30">
+    <aside className="hidden lg:flex lg:flex-col w-64 bg-white border-r border-gray-200 fixed left-0 top-0 bottom-0 z-30">
       <div className="h-16 flex items-center px-6 border-b border-gray-200">
-        <h1 className="text-lg font-semibold text-black">Dashboard</h1>
+        <h1 className="text-lg font-bold text-slate-800">VerifyFlow</h1>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-">
+      <nav className="flex-1 overflow-y-auto py-4">
         {navItems.map((item) => (
           <NavLink
             key={item.path}

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 
-const statusStyles = {
-    Verified: "bg-emerald-100 text-emerald-700",
-    Rejected: "bg-red-100 text-red-700",
-    Pending: "bg-amber-100 text-amber-700",
+const getStatusBadgeClass = (status) => {
+    const s = status?.toLowerCase();
+    if (s === "verified") return "bg-emerald-100 text-emerald-700 border border-emerald-200";
+    if (s === "rejected") return "bg-red-100 text-red-700 border border-red-200";
+    return "bg-amber-100 text-amber-700 border border-amber-200";
 };
 
 function SkeletonBlock({ className }) {
@@ -17,17 +18,14 @@ export default function Profile() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    console.log(userData, "data hai");
     const getCompanies = () => {
         setLoading(true);
         setError("");
 
         api.get("/get-profile")
-            .then((res) => res.data)
-            .then((finalRes) => {
-                const data = finalRes.data || [];
+            .then((res) => {
+                const data = res.data?.data || [];
                 setCompanies(data);
-
             })
             .catch((err) => {
                 setError(
@@ -38,28 +36,23 @@ export default function Profile() {
             .finally(() => setLoading(false));
     };
 
-    let getUserData = async () => {
-        await api.get('/user-auth/get-user')
-            .then((res) => res.data)
-            .then((finalRes) => {
-                console.log(finalRes);
-                setUserData(finalRes.data);
-            })
-    }
+    const getUserData = async () => {
+        try {
+            const res = await api.get('/user-auth/get-user');
+            setUserData(res.data?.data || []);
+        } catch (err) {
+            console.log("Error loading user data in profile:", err);
+        }
+    };
 
     useEffect(() => {
         getUserData();
         getCompanies();
-
     }, []);
 
-    
-
     return (
-        <div className="h-screen bg-slate-50 px-3 pt-5 sm:pb-0 pb-20 py-10 sm:px-6">
-            <div className="mx-auto max-w-5xl sm:pb-0 pb-18">
-
-
+        <div className="min-h-screen bg-slate-50 px-3 pt-5 pb-20 sm:px-6">
+            <div className="mx-auto max-w-5xl">
                 {error && (
                     <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                         {error}{" "}
@@ -85,19 +78,18 @@ export default function Profile() {
                                 </div>
                             ) : (
                                 <>
-                                    {/* profile  */}
-                                    {
-                                        userData.map((obj) => {
-                                            let {name}=obj
-                                            let fn=name.charAt(0)
+                                    {userData.length > 0 ? (
+                                        userData.map((obj, idx) => {
+                                            const name = obj.name || "User";
+                                            const fn = name.charAt(0)?.toUpperCase() || "U";
                                             return (
-                                                <>
-                                                    <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-blue-700 text-2xl font-bold text-white  ">
+                                                <div key={obj._id || idx}>
+                                                    <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-blue-700 text-2xl font-bold text-white">
                                                         {fn}
                                                     </div>
 
                                                     <h2 className="text-xl font-bold text-slate-800">
-                                                        {obj.name}
+                                                        {name}
                                                     </h2>
 
                                                     <div className="mt-5 space-y-4">
@@ -107,23 +99,28 @@ export default function Profile() {
                                                                 {obj.email}
                                                             </p>
                                                         </div>
-
-
                                                     </div>
-                                                </>
-                                            )
+                                                </div>
+                                            );
                                         })
-                                    }
+                                    ) : (
+                                        <div>
+                                            <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-blue-700 text-2xl font-bold text-white">
+                                                U
+                                            </div>
+                                            <h2 className="text-xl font-bold text-slate-800">Account</h2>
+                                        </div>
+                                    )}
                                 </>
                             )}
                         </div>
                     </div>
 
                     {/* ================= RIGHT COMPANY ================= */}
-                    <div className="rounded-2xl bg-white  p-3 sm:p-6 shadow-sm ring-1 ring-slate-100 lg:col-span-2 ">
+                    <div className="rounded-2xl bg-white p-3 sm:p-6 shadow-sm ring-1 ring-slate-100 lg:col-span-2">
                         <div className="space-y-6 sm:pr-2 lg:max-h-[70vh] lg:overflow-y-auto">
                             {loading ? (
-                                <div className="space-y-4 rounded-xl  p-5">
+                                <div className="space-y-4 rounded-xl p-5">
                                     <SkeletonBlock className="h-5 w-40" />
                                     <SkeletonBlock className="h-4 w-64" />
                                     <div className="grid grid-cols-1 gap-4 pt-2 sm:grid-cols-2">
@@ -151,11 +148,11 @@ export default function Profile() {
                                             </div>
 
                                             <span
-                                                className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[company.verificationStatus] ||
-                                                    "bg-slate-100 text-slate-600"
-                                                    }`}
+                                                className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadgeClass(
+                                                    company.verificationStatus
+                                                )}`}
                                             >
-                                                {company.verificationStatus}
+                                                {company.verificationStatus || "Pending"}
                                             </span>
                                         </div>
 

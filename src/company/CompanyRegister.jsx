@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 import api from "../services/api";
-
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { Building2 } from "lucide-react";
 
-
-
 export default function CompanyRegistration() {
-
     const navigate = useNavigate();
-
     const [loader, setLoader] = useState(false);
 
     const submitRegister = async (e) => {
@@ -20,53 +15,47 @@ export default function CompanyRegistration() {
 
         try {
             const form = e.currentTarget;
-
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
 
-            console.log("Sending:", data);
-
-            const res = await api.post("/create-profile", data);
-
-            console.log("API SUCCESS:", res.data);
-
-            if (res.data.status === true) {
-
-                toast.success(res.data.message);
-
-                form.reset();
-
-                // loader off
+            if (data.password !== data.confirmPassword) {
+                toast.error("Password and confirm password do not match");
                 setLoader(false);
-
-                // navigate after toast
-                setTimeout(() => {
-                    navigate("/dashboard/companies");
-                }, 1000);
-
                 return;
             }
 
-            toast.error(res.data.message);
+            if (data.phone && data.phone.length !== 10) {
+                toast.error("Phone number must be exactly 10 digits");
+                setLoader(false);
+                return;
+            }
+
+            const res = await api.post("/create-profile", data);
+
+            if (res.data.status === true) {
+                toast.success(res.data.message || "Company registered successfully");
+                form.reset();
+                setLoader(false);
+                setTimeout(() => {
+                    navigate("/dashboard/companies");
+                }, 1000);
+                return;
+            }
+
+            toast.error(res.data.message || "Company registration failed");
             setLoader(false);
-
         } catch (error) {
-
-            console.log("API ERROR:", error);
-            console.log("BACKEND:", error.response?.data);
-
             toast.error(
                 error.response?.data?.message ||
                 error.message ||
                 "Something went wrong"
             );
-
             setLoader(false);
         }
     };
 
     return (
-        <div className="min-h-screen ">
+        <div className="min-h-screen w-full px-4 pt-8 pb-28 sm:px-10 sm:pt-10 sm:pb-32">
             <ToastContainer />
 
             <div className=" max-w-full sm:flex flex-row-reverse ">
@@ -227,7 +216,7 @@ export default function CompanyRegistration() {
                                     name="pan"
                                     type="text"
                                     required
-                                    maxLength="10"
+                                    maxLength={10}
                                     placeholder="AABCT1234K"
                                     className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm uppercase text-slate-900 outline-none transition placeholder:normal-case placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                                 />
@@ -268,7 +257,7 @@ export default function CompanyRegistration() {
                                     name="phone"
                                     type="tel"
                                     required
-                                    maxLength="10"
+                                    maxLength={10}
                                     pattern="[0-9]{10}"
                                     placeholder="9123456789"
                                     className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
@@ -310,7 +299,7 @@ export default function CompanyRegistration() {
                                     name="password"
                                     type="password"
                                     required
-                                    minLength="6"
+                                    minLength={6}
                                     placeholder="Enter password"
                                     className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                                 />
@@ -331,7 +320,7 @@ export default function CompanyRegistration() {
                                     name="confirmPassword"
                                     type="password"
                                     required
-                                    minLength="6"
+                                    minLength={6}
                                     placeholder="Confirm password"
                                     className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                                 />
@@ -340,7 +329,7 @@ export default function CompanyRegistration() {
                         </div>
 
                         {/* Submit Section */}
-                        <div className="sm:w[80%] w-[100%] mt-7 border-t border-slate-200 pt-6">
+                        <div className="w-full mt-7 border-t border-slate-200 pt-6">
                             <button
                                 type="submit"
                                 disabled={loader}

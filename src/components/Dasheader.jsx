@@ -23,52 +23,31 @@ export default function Dasheader() {
   const logout = () => {
     localStorage.removeItem('token');
     navigate("/");
-  }
+  };
 
-let [fname, setfname] = useState('')
+  const [fname, setFname] = useState('');
 
-  let getUserData = async () => {
-    await api.get('/user-auth/get-user')
-      .then((res) => res.data)
-      .then((finalRes) => {
-        console.log(finalRes);
-        setfname(finalRes.data[0].name)
-      })
-  }
-
-  useEffect(() => {
-    getUserData();
-
-  }, []);
-
-  
-  let firstLetter = fname?.charAt(0).toUpperCase();
-
-  const getCompanies = () => {
-
-    api.get("/get-profile")
-      .then((res) => res.data)
-      .then((finalRes) => {
-        const data = finalRes.data || [];
-        // Guard against an empty list — there may be no company yet
-        setUserData(data.length > 0 ? data[0].userId : {});
-      })
-      .catch((err) => {
-        toast.error(err)
-      })
+  const getUserData = async () => {
+    try {
+      const res = await api.get('/user-auth/get-user');
+      const finalRes = res.data;
+      if (finalRes?.data && finalRes.data.length > 0) {
+        setFname(finalRes.data[0].name || '');
+      }
+    } catch (err) {
+      console.log("Error fetching user data in header:", err);
+    }
   };
 
   useEffect(() => {
-    getCompanies();
+    getUserData();
   }, []);
 
+  const firstLetter = fname?.charAt(0)?.toUpperCase() || 'U';
+
   return (
-
     <header className="sticky top-0 z-20 flex h-16 w-full items-center justify-between bg-white px-4 sm:px-6 shadow border-b border-slate-200">
-
-      <div className="flex  items-center gap-3 min-w-0">
-
-
+      <div className="flex items-center gap-3 min-w-0">
         {/* Mobile menu toggle — shown below the lg breakpoint, matching Sidebar's cutoff */}
         <button
           onClick={toggleMenu}
@@ -79,12 +58,11 @@ let [fname, setfname] = useState('')
         </button>
 
         <div className="sm:flex flex-col sm:pl-0 pl-10 hidden">
-          <p className="text-gray-400 uppercase">Welcome Back</p>
-          <h2 className="hidden lg:block   font-bold text-[#312C85]">
-            {name}
+          <p className="text-gray-400 uppercase text-xs">Welcome Back</p>
+          <h2 className="hidden lg:block font-bold text-[#312C85]">
+            {fname || 'User'}
           </h2>
         </div>
-
       </div>
 
       <ToastContainer />

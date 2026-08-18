@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   Building2,
   Clock3,
@@ -58,8 +58,6 @@ export default function Home() {
       try {
         const res = await api.get("/get-profile");
 
-        // console.log("API RESPONSE kya:", res.data)
-        // Agar API direct array return karti hai
         setCompanies(
           Array.isArray(res.data)
             ? res.data
@@ -80,18 +78,19 @@ export default function Home() {
   const totalCompanies = companies.length;
 
   const pendingCompanies = companies.filter(
-    (company) => company.verificationStatus === "pending"
+    (company) => company.verificationStatus?.toLowerCase() === "pending"
   ).length;
 
   const verifiedCompanies = companies.filter(
-    (company) => company.verificationStatus === "verified"
+    (company) => company.verificationStatus?.toLowerCase() === "verified"
   ).length;
 
-  const todayRegistrations = companies.filter(
-    (company) =>
-      new Date(company.createdAt).toDateString() ===
-      new Date().toDateString()
-  ).length;
+  const todayRegistrations = companies.filter((company) => {
+    if (!company.createdAt) return false;
+    return (
+      new Date(company.createdAt).toDateString() === new Date().toDateString()
+    );
+  }).length;
 
   // ================= DASHBOARD CARDS =================
 
@@ -125,18 +124,69 @@ export default function Home() {
     },
   ];
 
-  // ================= GRAPH DATA =================
-  // Abhi dummy data hai.
-  // Baad me API ke according dynamic kar sakte hain.
+  // ================= DYNAMIC GRAPH DATA FROM API =================
 
-  const companyData = [
-    { month: "Jan", registered: 40, verified: 30 },
-    { month: "Feb", registered: 55, verified: 42 },
-    { month: "Mar", registered: 70, verified: 55 },
-    { month: "Apr", registered: 62, verified: 48 },
-    { month: "May", registered: 90, verified: 75 },
-    { month: "Jun", registered: 110, verified: 95 },
-  ];
+  const companyData = useMemo(() => {
+    const now = new Date();
+    const months = [];
+    
+    // Generate the last 6 months in chronological order
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({
+        month: d.toLocaleString("en-US", { month: "short" }),
+        year: d.getFullYear(),
+        monthIndex: d.getMonth(),
+        registered: 0,
+        verified: 0,
+      });
+    }
+
+    companies.forEach((company) => {
+      // 1. Registered count by month
+      if (company.createdAt) {
+        const regDate = new Date(company.createdAt);
+        if (!isNaN(regDate.getTime())) {
+          const match = months.find(
+            (m) =>
+              m.monthIndex === regDate.getMonth() &&
+              m.year === regDate.getFullYear()
+          );
+          if (match) {
+            match.registered += 1;
+          }
+        }
+      }
+
+      // 2. Verified count by month
+      const isVerified =
+        company.verificationStatus?.toLowerCase() === "verified";
+      if (isVerified) {
+        const verDate = company.verificationDate
+          ? new Date(company.verificationDate)
+          : company.createdAt
+          ? new Date(company.createdAt)
+          : null;
+
+        if (verDate && !isNaN(verDate.getTime())) {
+          const match = months.find(
+            (m) =>
+              m.monthIndex === verDate.getMonth() &&
+              m.year === verDate.getFullYear()
+          );
+          if (match) {
+            match.verified += 1;
+          }
+        }
+      }
+    });
+
+    return months.map(({ month, registered, verified }) => ({
+      month,
+      registered,
+      verified,
+    }));
+  }, [companies]);
 
   return (
     <div className="w-full px-4 py-8 pb-20 sm:p-10">
@@ -265,43 +315,53 @@ export default function Home() {
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
+                  stroke="#f1f5f9"
                 />
 
                 <XAxis
                   dataKey="month"
                   tickLine={false}
                   axisLine={false}
+                  tick={{ fill: "#64748b", fontSize: 12 }}
                 />
 
                 <YAxis
+                  allowDecimals={false}
                   tickLine={false}
                   axisLine={false}
+                  tick={{ fill: "#64748b", fontSize: 12 }}
                 />
 
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#ffffff",
+                    borderRadius: "10px",
+                    border: "1px solid #e2e8f0",
+                    boxShadow: "0 4px 12px -1px rgb(0 0 0 / 0.08)",
+                  }}
+                />
 
                 {/* REGISTERED */}
-
                 <Line
                   type="monotone"
                   dataKey="registered"
                   name="Registered"
                   stroke="#2563eb"
                   strokeWidth={3}
-                  dot={{ r: 4 }}
+                  dot={{ r: 4, fill: "#2563eb" }}
+                  activeDot={{ r: 6 }}
                 />
 
                 {/* VERIFIED */}
-
                 <Line
                   type="monotone"
                   dataKey="verified"
                   name="Verified"
                   stroke="#16a34a"
                   strokeWidth={3}
-                  dot={{ r: 4 }}
+                  dot={{ r: 4, fill: "#16a34a" }}
+                  activeDot={{ r: 6 }}
                 />
-
               </LineChart>
             </ResponsiveContainer>
 

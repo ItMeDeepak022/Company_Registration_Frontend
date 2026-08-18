@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Login from './components/Login'
 import ProtectedLayout from './ProtectedLayout'
 import Dashboard from './components/Dashboard'

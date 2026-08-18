@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -10,42 +10,99 @@ const readOnlyClass =
 const labelClass = "mb-2 block text-sm font-medium text-slate-700";
 
 export default function EditCompanyRegistration() {
+    const { id } = useParams();
     const { state } = useLocation();
     const navigate = useNavigate();
-    const [loader, setLoader] = useState(false);
 
+    const [loader, setLoader] = useState(false);
+    const [fetching, setFetching] = useState(!state);
+    const [company, setCompany] = useState(state || null);
+
+    // Form inputs state
+    const [companyName, setCompanyName] = useState(state?.companyName || "");
+    const [phone, setPhone] = useState(state?.phone || "");
+    const [address, setAddress] = useState(state?.address || "");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    useEffect(() => {
+        // If state is not provided (e.g., page refresh or direct URL), fetch company by id
+        if (!state && id) {
+            setFetching(true);
+            api.get("/get-profile")
+                .then((res) => {
+                    const companies = res.data?.data || [];
+                    const found = companies.find((c) => c._id === id);
+                    if (found) {
+                        setCompany(found);
+                        setCompanyName(found.companyName || "");
+                        setPhone(found.phone || "");
+                        setAddress(found.address || "");
+                    } else {
+                        toast.error("Company not found");
+                    }
+                })
+                .catch((err) => {
+                    toast.error(err.response?.data?.message || "Failed to load company details");
+                })
+                .finally(() => setFetching(false));
+        }
+    }, [id, state]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-         
+        const targetId = company?._id || id;
+        if (!targetId) {
+            toast.error("Invalid company ID");
+            return;
+        }
 
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData.entries());
+        // Phone validation
+        if (phone && phone.length !== 10) {
+            toast.error("Phone number must be exactly 10 digits");
+            return;
+        }
 
-        setLoader(true)
+        // Password validation if user entered something
+        if (password || confirmPassword) {
+            if (!password || !confirmPassword) {
+                toast.error("Both password and confirm password are required to update password");
+                return;
+            }
+            if (password.length < 6) {
+                toast.error("Password must be at least 6 characters");
+                return;
+            }
+            if (password !== confirmPassword) {
+                toast.error("Password and confirm password do not match");
+                return;
+            }
+        }
+
+        const payload = {
+            companyName,
+            phone,
+            address,
+        };
+
+        if (password && confirmPassword) {
+            payload.password = password;
+            payload.confirmPassword = confirmPassword;
+        }
+
+        setLoader(true);
         try {
-            const res = await api.put(`/update-profile/${state._id}`, data);
-
-            console.log(res.data);
+            const res = await api.put(`/update-profile/${targetId}`, payload);
 
             if (res.data.status) {
-                if (res.data.status) {
-                    toast.success(res.data.message)
-                    setLoader(false)
-                    setTimeout(() => {
-                        navigate("/dashboard/companies")
-                    }, 1000);
-                }
-                else {
-                    toast.error(res.data.message)
-                    setLoader(false)
-                }
-
-
+                toast.success(res.data.message || "Company updated successfully");
+                setTimeout(() => {
+                    navigate("/dashboard/companies");
+                }, 1000);
+            } else {
+                toast.error(res.data.message || "Company update failed");
             }
-
-
         } catch (error) {
             toast.error(
                 error.response?.data?.message || "Company update failed. Please try again."
@@ -55,17 +112,23 @@ export default function EditCompanyRegistration() {
         }
     };
 
+    if (fetching) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-slate-50">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+        <div className="min-h-screen w-full px-4 pt-8 pb-28 sm:px-10 sm:pt-10 sm:pb-32">
             <ToastContainer />
             <div className="mx-auto max-w-3xl rounded-xl bg-white p-6 shadow-md sm:p-8">
-
                 <h1 className="mb-8 text-2xl font-bold text-gray-800 sm:text-3xl">
                     Edit Company Registration
                 </h1>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-
                     {/* Company Name — full width */}
                     <div>
                         <label className={labelClass}>
@@ -75,7 +138,8 @@ export default function EditCompanyRegistration() {
                             name="companyName"
                             type="text"
                             required
-                            defaultValue={state?.companyName || ""}
+                            value={companyName}
+                            onChange={(e) => setCompanyName(e.target.value)}
                             className={inputClass}
                         />
                     </div>
@@ -88,7 +152,7 @@ export default function EditCompanyRegistration() {
                                 name="registrationNumber"
                                 type="text"
                                 readOnly
-                                defaultValue={state?.registrationNumber || ""}
+                                value={company?.registrationNumber || ""}
                                 className={readOnlyClass}
                             />
                         </div>
@@ -99,7 +163,7 @@ export default function EditCompanyRegistration() {
                                 name="pan"
                                 type="text"
                                 readOnly
-                                defaultValue={state?.pan || ""}
+                                value={company?.pan || ""}
                                 className={readOnlyClass}
                             />
                         </div>
@@ -108,15 +172,13 @@ export default function EditCompanyRegistration() {
                     {/* Email + Phone — side by side */}
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                         <div>
-                            <label className={labelClass}>
-                                Email <span className="text-red-500">*</span>
-                            </label>
+                            <label className={labelClass}>Email (Read-only)</label>
                             <input
                                 name="email"
                                 type="email"
-                                required
-                                defaultValue={state?.email || ""}
-                                className={inputClass}
+                                readOnly
+                                value={company?.email || ""}
+                                className={readOnlyClass}
                             />
                         </div>
 
@@ -129,8 +191,9 @@ export default function EditCompanyRegistration() {
                                 type="tel"
                                 required
                                 pattern="[0-9]{10}"
-                                maxLength="10"
-                                defaultValue={state?.phone || ""}
+                                maxLength={10}
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
                                 className={inputClass}
                             />
                         </div>
@@ -145,7 +208,8 @@ export default function EditCompanyRegistration() {
                             name="address"
                             rows="4"
                             required
-                            defaultValue={state?.address || ""}
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
                             className={`${inputClass} resize-none`}
                         />
                     </div>
@@ -153,12 +217,13 @@ export default function EditCompanyRegistration() {
                     {/* New Password + Confirm — side by side, optional */}
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                         <div>
-                            <label className={labelClass}>New Password</label>
+                            <label className={labelClass}>New Password (Optional)</label>
                             <input
                                 name="password"
                                 type="password"
-                                minLength="6"
-                                required
+                                minLength={6}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Leave blank to keep current password"
                                 className={inputClass}
                             />
@@ -169,8 +234,9 @@ export default function EditCompanyRegistration() {
                             <input
                                 name="confirmPassword"
                                 type="password"
-                                required
-                                minLength="6"
+                                minLength={6}
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
                                 placeholder="Confirm new password"
                                 className={inputClass}
                             />
@@ -192,9 +258,7 @@ export default function EditCompanyRegistration() {
                             "Update Company"
                         )}
                     </button>
-
                 </form>
-
             </div>
         </div>
     );

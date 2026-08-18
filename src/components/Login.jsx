@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -122,6 +122,13 @@ export default function Login() {
     const [registerLoading, setRegisterLoading] = useState(false);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            navigate("/dashboard", { replace: true });
+        }
+    }, [navigate]);
 
     const toggleMode = () => setIsLogin((prev) => !prev);
 
