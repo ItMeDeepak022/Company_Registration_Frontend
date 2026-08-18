@@ -139,7 +139,7 @@ export default function Login() {
 
             if (finalRes.status) {
                 localStorage.setItem("token", finalRes.token);
-                toast.success(finalRes.message || "Logged in successfully");
+                toast.success(finalRes.message);
                 e.target.reset();
                 setTimeout(() => navigate("/dashboard"), 500);
             } else {

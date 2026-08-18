@@ -21,9 +21,9 @@ export default function Dasheader() {
   const toggleMenu = () => setShowMenu((prev) => !prev);
 
   const logout = () => {
-    localStorage.clear();
+    localStorage.removeItem("token");
     navigate("/");
-  }
+  };
 
   const [userData, setUserData] = useState({});
 
