@@ -10,15 +10,10 @@ import AllCompanies from './allcompany/Allcompany'
 import CompanyVerification from './company-varification/Verification'
 import Profile from './profile/Profile'
 
-
-
 export default function RootLayout() {
     return (
-       
-
         <BrowserRouter>
             <Routes>
-
                 {/* Login */}
                 <Route path="/" element={<Login />} />
 
@@ -64,7 +59,6 @@ export default function RootLayout() {
                         element={<Profile />}
                     />
                 </Route>
-
             </Routes>
         </BrowserRouter>
     )

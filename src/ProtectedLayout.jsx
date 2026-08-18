@@ -21,18 +21,14 @@ export default function ProtectedRoute({ children }) {
                     },
                 });
 
-                // console.log("Verify response:", res.data);
-
                 if (res.data.status) {
                     setIsValid(true);
                 } else {
                     localStorage.removeItem("token");
                     setIsValid(false);
                 }
-
             } catch (error) {
                 console.log("Verify error:", error.response?.data || error);
-
                 localStorage.removeItem("token");
                 setIsValid(false);
             }

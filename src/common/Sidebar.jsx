@@ -42,7 +42,7 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="p-4 ">
+      <div className="p-4">
         <button
           onClick={logout}
           className="w-full py-2 text-sm font-medium text-red-600 border border-red-600 rounded hover:bg-red-600 hover:text-white transition"

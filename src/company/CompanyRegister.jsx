@@ -10,7 +10,6 @@ export default function CompanyRegistration() {
 
     const submitRegister = async (e) => {
         e.preventDefault();
-
         setLoader(true);
 
         try {
@@ -58,12 +57,10 @@ export default function CompanyRegistration() {
         <div className="min-h-screen w-full px-4 pt-8 pb-28 sm:px-10 sm:pt-10 sm:pb-32">
             <ToastContainer />
 
-            <div className=" max-w-full sm:flex flex-row-reverse ">
-
+            <div className="max-w-full sm:flex flex-row-reverse">
                 {/* Notice / Guidance card */}
                 <div className="sm:block hidden m-2 mb-5 w-full max-w-[500px] h-[500px] bg-white">
                     <div className="flex flex-col gap-3 p-4 sm:gap-5 sm:p-5">
-
                         {/* Icon */}
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm sm:h-12 sm:w-12">
                             <Building2 className="h-5 w-5" />
@@ -71,7 +68,6 @@ export default function CompanyRegistration() {
 
                         {/* Content */}
                         <div className="min-w-0 flex-1">
-
                             {/* Header */}
                             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                 <h3 className="text-base font-bold text-slate-900 sm:text-lg">
@@ -92,7 +88,6 @@ export default function CompanyRegistration() {
 
                             {/* Checklist */}
                             <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-
                                 {/* Required Documents */}
                                 <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
                                     <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
@@ -134,7 +129,6 @@ export default function CompanyRegistration() {
                                         <li>Secure login password</li>
                                     </ul>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -142,8 +136,7 @@ export default function CompanyRegistration() {
 
                 {/* Form Container */}
                 <div className="flex-1 m-2 sm:rounded-xl border bg-white border-slate-200 sm:pb-0 mb-15">
-
-                    <div className=" border-b border-slate-200 px-5 py-5 sm:px-7">
+                    <div className="border-b border-slate-200 px-5 py-5 sm:px-7">
                         <h2 className="text-base font-semibold text-slate-900">
                             Company Information
                         </h2>
@@ -154,13 +147,8 @@ export default function CompanyRegistration() {
                     </div>
 
                     {/* Form */}
-                    <form
-                        onSubmit={submitRegister}
-                        className="p-5 sm:p-7"
-                    >
-
+                    <form onSubmit={submitRegister} className="p-5 sm:p-7">
                         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-
                             {/* Company Name */}
                             <div>
                                 <label
@@ -325,7 +313,6 @@ export default function CompanyRegistration() {
                                     className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                                 />
                             </div>
-
                         </div>
 
                         {/* Submit Section */}
@@ -345,12 +332,9 @@ export default function CompanyRegistration() {
                                 )}
                             </button>
                         </div>
-
                     </form>
                 </div>
             </div>
-
-
         </div>
     );
 }
