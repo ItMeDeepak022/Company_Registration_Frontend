@@ -41,7 +41,11 @@ export default function Dasheader() {
     <header className="sticky top-0 z-20 flex h-16 w-full items-center justify-between bg-white px-4 sm:px-6 shadow border-b border-slate-200">
       <div className="flex items-center gap-3 min-w-0">
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         {/* Mobile menu toggle — shown below the lg breakpoint, matching Sidebar's cutoff */}
+=======
+        {/* Mobile menu toggle */}
+>>>>>>> Stashed changes
 =======
         {/* Mobile menu toggle */}
 >>>>>>> Stashed changes

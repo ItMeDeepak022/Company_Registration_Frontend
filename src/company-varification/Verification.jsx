@@ -3,7 +3,11 @@ import api from "../services/api";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { CheckCircle2, ShieldCheck, Clock } from "lucide-react";
+=======
+import { CheckCircle2 } from "lucide-react";
+>>>>>>> Stashed changes
 =======
 import { CheckCircle2 } from "lucide-react";
 >>>>>>> Stashed changes
@@ -28,6 +32,10 @@ export default function CompanyVerification() {
     const [loadingId, setLoadingId] = useState(null);
     const [loading, setLoading] = useState(true);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+    const [companies, setCompanies] = useState([]);
+>>>>>>> Stashed changes
 =======
     const [companies, setCompanies] = useState([]);
 >>>>>>> Stashed changes
@@ -106,6 +114,7 @@ export default function CompanyVerification() {
                                             Company {index + 1}
                                         </span>
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
                         companies.length > 0 ? (
                             companies.map((company, index) => {
@@ -305,6 +314,80 @@ export default function CompanyVerification() {
                                     </div>
                                 </div>
 
+=======
+                                        {/* Status */}
+                                        <span
+                                            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                                                isVerified
+                                                    ? "bg-green-100 text-green-700"
+                                                    : isRejected
+                                                    ? "bg-red-100 text-red-700"
+                                                    : "bg-yellow-100 text-yellow-700"
+                                            }`}
+                                        >
+                                            {company.verificationStatus || "Pending"}
+                                        </span>
+                                    </div>
+
+                                    <h2 className="break-words text-xl font-bold text-gray-800">
+                                        {company.companyName}
+                                    </h2>
+                                </div>
+
+                                {/* Company Details */}
+                                <div className="flex-1 space-y-4">
+                                    {/* Registration Number */}
+                                    <div>
+                                        <p className="text-xs font-medium text-gray-500 sm:text-sm">
+                                            Registration Number
+                                        </p>
+                                        <p className="mt-1 break-all text-sm font-semibold text-gray-800">
+                                            {company.registrationNumber}
+                                        </p>
+                                    </div>
+
+                                    {/* PAN */}
+                                    <div>
+                                        <p className="text-xs font-medium text-gray-500 sm:text-sm">
+                                            PAN
+                                        </p>
+                                        <p className="mt-1 text-sm font-semibold text-gray-800">
+                                            {company.pan}
+                                        </p>
+                                    </div>
+
+                                    {/* Email */}
+                                    <div>
+                                        <p className="text-xs font-medium text-gray-500 sm:text-sm">
+                                            Email
+                                        </p>
+                                        <p className="mt-1 break-all text-sm font-semibold text-gray-800">
+                                            {company.email}
+                                        </p>
+                                    </div>
+
+                                    {/* Phone */}
+                                    <div>
+                                        <p className="text-xs font-medium text-gray-500 sm:text-sm">
+                                            Phone
+                                        </p>
+                                        <p className="mt-1 text-sm font-semibold text-gray-800">
+                                            {company.phone}
+                                        </p>
+                                    </div>
+
+                                    {/* Address */}
+                                    <div>
+                                        <p className="text-xs font-medium text-gray-500 sm:text-sm">
+                                            Address
+                                        </p>
+                                        <p className="mt-1 break-words text-sm font-semibold leading-6 text-gray-800">
+                                            {company.address}
+                                        </p>
+                                    </div>
+                                </div>
+
+>>>>>>> Stashed changes
                                 {/* Verify Button */}
                                 <button
                                     type="button"
@@ -339,6 +422,9 @@ export default function CompanyVerification() {
                         <p className="mt-1 text-sm text-gray-400">Register a company first to perform verification.</p>
                     </div>
                 )}
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             </div>
         </div>
